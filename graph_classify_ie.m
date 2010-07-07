@@ -1,17 +1,15 @@
-function [Lhat Lvar ind P yhat] = graph_classify_ie(Atrn,Gtrn,Z,Atst,Gtst)
+function [Lhat Lvar ind P yhat] = graph_classify_ie(Atrn,Gtrn,alg,Atst,Gtst)
 % this script classifies using a number of different approaches
 % INPUT:
 % Atrn:     n x n x s array, where |V|=n, and s is the number of samples
-% Gtrn:     a structure containing various fields (see get_constants.m for
-% details)
-% Z:        a structure containing fields pertaining to how to perform the
-% classification.  list of fields:
-%   nb:     if exists, do naive bayes classification
-%   inc:    if exists, do incoherent classification
-%   coh:    if exists, do coh degree signal classification
-%   tru:    if exists, classify using tru signal subgraph
-%   Ncoh:   # vertices to select when doing coherent classifier
-%   Ninc:   # edges to select when doing incoherent classifier
+% Gtrn:     a structure containing constants for training data (see get_constants.m for details)
+% alg:      a structure containing fields specifying algorithm parameters.  list of fields:
+%   signal_subgraph_ind:     if exists, do naive bayes classification using these indices only
+%   nb_ind:                 if exists, do naive bayes classification using all indices
+%   num_inc_edges:          if exists, do incoherent signal classification, using this number of edges
+%   num_coh_edges:          if exists, do incoherent signal classification, using this number of edges
+% Atst:     same as Atrn but for test data
+% Gtst:     same as Gtrn but for test data
 % 
 % OUTPUT:
 %   Lhat:   misclassification rate for each algorithm implemented
@@ -28,31 +26,30 @@ else
     P = get_params(Atrn(:,:,1:Gtrn.s),Gtrn); % update parameters using only other samples    
 end 
 
-% initialize stuff for the 3 different classifiers
+% initialize stuff for the different classifiers
 
-if isfield(Z,'tru'),    tru=true;                                       else tru= false;  end
-if isfield(Z,'nb'),     nb=true;   ind(Gtst.s).nb  = find(P.d_opt>0);   else nb = false;  end
-if isfield(Z,'inc'),    inc=true;  ind(Gtst.s).inc = zeros(1,Gtrn.n);   else inc = false; end
-if isfield(Z,'coh'),    coh=true;  ind(Gtst.s).coh = zeros(1,Gtrn.n);   else coh = false; end
+if isfield(alg,'signal_subgraph_ind'),  tru=true;                                       else tru= false;  end
+if isfield(alg,'nb_ind'),               nb=true;                                        else nb = false;  end
+if isfield(alg,'num_inc_edges'),        inc=true;  ind(Gtst.s).inc = zeros(1,Gtrn.n);   else inc = false; end
+if isfield(alg,'num_coh_edges'),        coh=true;  ind(Gtst.s).coh = zeros(1,Gtrn.n);   else coh = false; end
 
 for i=1:Gtst.s
 
     if tru                          % classify using only true signal edges
-        yhat.tru(i)  = ie_classify(Atst(:,:,i),P,Z.tru);
+        yhat.tru(i)  = ie_classify(Atst(:,:,i),P,alg.signal_subgraph_ind);
     end
 
     if nb                           % naive bayes classifier
-        ind(i).nb   = ind(Gtst.s).nb;   % use all edges (for which d_opt>0 (ie, ignore diagonal for hollow matrices, ignore lower lower triangle for undirected graphs)
-        yhat.nb(i)  = ie_classify(Atst(:,:,i),P,ind(i).nb); % estimated class identities
+        yhat.nb(i)  = ie_classify(Atst(:,:,i),P,alg.nb_ind); % estimated class identities
     end
 
     if inc                          % incoherent edge classifier
-        ind(i).inc = get_inc_edges(P.d_opt,Z.Ninc);
+        ind(i).inc = get_inc_edges(P.d_pos,alg.num_inc_edges);
         yhat.inc(i)= ie_classify(Atst(:,:,i),P,ind(i).inc);
     end
 
     if coh                          % coherent edge classifier
-        ind(i).coh  = get_max_edges(P.d_opt);
+        ind(i).coh  = get_max_edges(P.d_pos);
         yhat.coh(i) = ie_classify(Atst(:,:,i),P,ind(i).coh);
     end
 
