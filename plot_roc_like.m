@@ -1,7 +1,7 @@
 clf, hold all
 Ztrue=zeros(constants.n);
 Ztrue(params.signal_subgraph_ind)=1;
-for k=1:length(alg.num_train_samples)
+for k=1:alg.num_splits
     jmax=length(inds{k});
     for j=1:jmax
         Zmat = zeros(constants.n);

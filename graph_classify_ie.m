@@ -4,7 +4,7 @@ function [Lhat Lvar ind P yhat] = graph_classify_ie(Atrn,Gtrn,alg,Atst,Gtst)
 % Atrn:     n x n x s array, where |V|=n, and s is the number of samples
 % Gtrn:     a structure containing constants for training data (see get_constants.m for details)
 % alg:      a structure containing fields specifying algorithm parameters.  list of fields:
-%   signal_subgraph_ind:     if exists, do naive bayes classification using these indices only
+%   signal_subgraph_ind:    if exists, do naive bayes classification using these indices only
 %   nb_ind:                 if exists, do naive bayes classification using all indices
 %   num_inc_edges:          if exists, do incoherent signal classification, using this number of edges
 %   num_coh_edges:          if exists, do incoherent signal classification, using this number of edges

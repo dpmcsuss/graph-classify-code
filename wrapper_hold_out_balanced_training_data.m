@@ -1,10 +1,7 @@
-function [Lhats inds] = hold_out_classify(adjacency_matrices,class_labels,alg)
+function [Lhats inds] = wrapper_hold_out_balanced_training_data(adjacency_matrices,class_labels,alg)
 
 constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
-
 nmin=min(constants.s0,constants.s1);
-nmax=max(constants.s0,constants.s1);
-
 inds{alg.num_splits} = [];
 
 if isfield(alg,'signal_subgraph_ind'), Lhats.tru   = zeros(alg.num_splits,alg.num_repeats); end
