@@ -16,8 +16,8 @@ if isfield(alg,'signal_subgraph_ind'), h(4)=errorbar(alg.num_train_samples+0.6,m
 axis([0 max(alg.num_train_samples)+1 0 0.5])
 ylabel('misclassification rate','fontsize',fs)
 xlabel('# training samples','fontsize',fs)
-legend(gca,'naive Bayes','incoherent','coherent','optimal','Location','NorthEast')
-set(gca,'XTick',alg.num_train_samples,'XTickLabel',alg.num_train_samples*2)
+legend(gca,'naive Bayes','incoherent','coherent','optimal','Location','Best')
+set(gca,'XTick',alg.num_train_samples,'XTickLabel',alg.num_train_samples)
 
 if isfield(alg,'signal_subgraph_ind'), subplot(122), hold all;
 
@@ -43,7 +43,7 @@ if isfield(alg,'signal_subgraph_ind'), subplot(122), hold all;
     errorbar(mean_correct.coh,std_correct.coh,'color',gray,'linestyle','-','linewidth',lw)
 
     axis([0 k 0 1])
-    set(gca,'XTick',1:k,'XTickLabel',2*alg.num_train_samples)
+    set(gca,'XTick',1:k,'XTickLabel',alg.num_train_samples)
     ylabel('edge detection rate','fontsize',fs)
     xlabel('# training samples','fontsize',fs)
 
