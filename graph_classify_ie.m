@@ -78,11 +78,11 @@ function y = ie_classify(datum,P,ind)
 % y:        estimated class
 
 if any(datum(ind))>1            % if poisson
-    post0=sum(sum(datum(ind).*P.lnE0(ind) - P.E0(ind)));
-    post1=sum(sum(datum(ind).*P.lnE1(ind) - P.E1(ind)));
+    post0=sum(sum(datum(ind).*P.lnE0(ind) - P.E0(ind)))+P.lnprior0;
+    post1=sum(sum(datum(ind).*P.lnE1(ind) - P.E1(ind)))+P.lnprior0;
 else                            % if bernoulli
-    post0=sum(datum(ind).*P.lnE0(ind)+(1-datum(ind)).*P.ln1E0(ind));
-    post1=sum(datum(ind).*P.lnE1(ind)+(1-datum(ind)).*P.ln1E1(ind));
+    post0=sum(datum(ind).*P.lnE0(ind)+(1-datum(ind)).*P.ln1E0(ind))+P.lnprior0;
+    post1=sum(datum(ind).*P.lnE1(ind)+(1-datum(ind)).*P.ln1E1(ind))+P.lnprior0;
 end
 
 [foo bar] = sort([post0, post1]);

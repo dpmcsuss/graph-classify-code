@@ -1,20 +1,19 @@
-function [Lhats inds] = get_Lhat_hold_out(adjacency_matrices,class_labels,alg)
+function [Lhats inds] = wrapper_hold_out(adjacency_matrices,class_labels,alg)
 
 constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
 
 nmin=min(constants.s0,constants.s1);
-nmax=max(constants.s0,constants.s1);
 
 inds{length(alg.num_train_samples)} = [];
 
-if isfield(alg,'signal_subgraph_ind'), Lhats.tru   = zeros(length(alg.num_train_samples),alg.num_iterations); end
-Lhats.nb    = zeros(length(alg.num_train_samples),alg.num_iterations);
-Lhats.inc   = zeros(length(alg.num_train_samples),alg.num_iterations);
-Lhats.coh   = zeros(length(alg.num_train_samples),alg.num_iterations);
+if isfield(alg,'signal_subgraph_ind'), Lhats.tru   = zeros(length(alg.num_train_samples),alg.num_repeats); end
+Lhats.nb    = zeros(length(alg.num_train_samples),alg.num_repeats);
+Lhats.inc   = zeros(length(alg.num_train_samples),alg.num_repeats);
+Lhats.coh   = zeros(length(alg.num_train_samples),alg.num_repeats);
 
 for i=1:length(alg.num_train_samples)
 
-    for j=1:alg.num_iterations
+    for j=1:alg.num_repeats
 
         ind0  = randperm(nmin);
         ind1  = randperm(nmin);

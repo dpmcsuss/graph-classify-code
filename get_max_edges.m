@@ -1,6 +1,6 @@
 function ind = get_max_edges(delhat,Nmax)
-% finds the G.Nmax vertices with max degree
-% if G.Nmax is unspecified, n/10 is used
+% finds the constants.Nmax vertices with max degree
+% if constants.Nmax is unspecified, n/10 is used
 
 deg = sum(delhat,1) + sum(delhat,2)';
 [degsort IX] = sort(deg,'descend');

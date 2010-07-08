@@ -17,7 +17,7 @@ title('naive Bayes signal subgraph')
 i=i+1; subplot(nrows,ncols,i), cla
 delsort=sort(est_params.d_pos(:),'descend');
 delsparse=est_params.d_opt;
-delsparse(delsparse<delsort(alg.num_signal_edges))=0;
+delsparse(delsparse<delsort(alg.num_inc_edges))=0;
 imagesc(delsparse);
 title('incoherent signal subgraph')
 

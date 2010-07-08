@@ -5,23 +5,20 @@ figure(2), clf, hold all
 gray=0.75*[1 1 1];
 lw=2;
 fs=12;
-xticks=alg.num_train_samples;
-clear Ncorrect ind_IE_mat ind_max_mat
-
 
 if isfield(alg,'signal_subgraph_ind'),
     subplot(121), hold all;
-    h(1)=errorbar(alg.num_train_samples+0.6,mean(Lhats.tru,2),var(Lhats.tru,[],2),'color','k','linestyle','--','linewidth',lw);
+    h(4)=errorbar(alg.num_train_samples+0.6,mean(Lhats.tru,2),var(Lhats.tru,[],2),'color','k','linestyle','--','linewidth',lw);
 end
-h(2)=errorbar(alg.num_train_samples,mean(Lhats.nb,2),var(Lhats.nb,[],2),'color',gray,'linestyle','--','linewidth',lw);
-h(3)=errorbar(alg.num_train_samples+0.2,mean(Lhats.inc,2),var(Lhats.inc,[],2),'color','k','linestyle','-','linewidth',lw);
-h(4)=errorbar(alg.num_train_samples+0.4,mean(Lhats.coh,2),var(Lhats.coh,[],2),'color',gray,'linestyle','-','linewidth',lw);
+h(1)=errorbar(alg.num_train_samples,mean(Lhats.nb,2),var(Lhats.nb,[],2),'color',gray,'linestyle','--','linewidth',lw);
+h(2)=errorbar(alg.num_train_samples+0.2,mean(Lhats.inc,2),var(Lhats.inc,[],2),'color','k','linestyle','-','linewidth',lw);
+h(3)=errorbar(alg.num_train_samples+0.4,mean(Lhats.coh,2),var(Lhats.coh,[],2),'color',gray,'linestyle','-','linewidth',lw);
 
 axis([0 max(alg.num_train_samples)+1 0 0.5])
 ylabel('misclassification rate','fontsize',fs)
 xlabel('# training samples','fontsize',fs)
-legend(gca,'optimal','naive Bayes','incoherent','coherent','Location','NorthEast')
-set(gca,'XTick',alg.num_train_samples,'XTickLabel',alg.num_train_samples*2)
+legend(gca,'naive Bayes','incoherent','coherent','optimal','Location','NorthEast')
+set(gca,'XTick',alg.num_train_samples,'XTickLabel',alg.num_train_samples)
 
 if isfield(alg,'signal_subgraph_ind'), subplot(122), hold all;
 
@@ -47,7 +44,7 @@ if isfield(alg,'signal_subgraph_ind'), subplot(122), hold all;
     errorbar(mean_correct.coh,std_correct.coh,'color',gray,'linestyle','-','linewidth',lw)
 
     axis([0 k 0 1])
-    set(gca,'XTick',1:k,'XTickLabel',2*alg.num_train_samples)
+    set(gca,'XTick',1:k,'XTickLabel',alg.num_train_samples)
     ylabel('edge detection rate','fontsize',fs)
     xlabel('# training samples','fontsize',fs)
 
