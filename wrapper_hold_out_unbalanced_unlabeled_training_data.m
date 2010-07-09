@@ -3,6 +3,15 @@ function [Lhats inds num_iters] = wrapper_hold_out_unbalanced_unlabeled_training
 constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
 inds{alg.max_fw_iters} = [];
 
+tst_ind = 1:constants.s; tst_ind(constants.s0)=[]; tst_ind(1)=[];
+
+% make data unlabeled
+for i=tst_ind
+    q=randperm(constants.n);
+    A=adjacency_matrices(:,:,i);
+    adjacency_matrices(:,:,i)=A(q,q);
+end
+
 if isfield(alg,'signal_subgraph_ind'), Lhats.tru = zeros(alg.max_fw_iters,1); end
 Lhats.nb    = zeros(alg.max_fw_iters,1);
 Lhats.inc   = zeros(alg.max_fw_iters,1);
@@ -15,14 +24,14 @@ num_iters=zeros(1,alg.max_fw_iters);
 
 for ii=1:alg.max_fw_iters
 
-    tst_ind = 1:constants.s; tst_ind(constants.s0)=[]; tst_ind(1)=[];
     k=0;
     for j=tst_ind
         k=k+1;
         if j < constants.s0, B=Atrn(:,:,1); else B=Atrn(:,:,2); end
         A=adjacency_matrices(:,:,j);
         [f,myp,x,iter]=sfw(A,-B,ii);
-        num_iters(ii)=iter;
+        num_iters(ii,j)=iter;
+        myp=1:constants.n;
         Atst(:,:,k)=A(myp,myp);
     end
 

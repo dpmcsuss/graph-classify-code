@@ -31,7 +31,7 @@ end
 if isfield(alg,'signal_subgraph_ind'),  tru=true;                                       else tru= false;  end
 if isfield(alg,'nb_ind'),               nb=true;                                        else nb = false;  end
 if isfield(alg,'num_inc_edges'),        inc=true;  ind(Gtst.s).inc = zeros(1,Gtrn.n);   else inc = false; end
-if isfield(alg,'num_coh_edges'),        coh=true;  ind(Gtst.s).coh = zeros(1,Gtrn.n);   else coh = false; end
+if isfield(alg,'num_coh_vertices'),     coh=true;  ind(Gtst.s).coh = zeros(1,Gtrn.n);   else coh = false; end
 
 for i=1:Gtst.s
 
@@ -49,7 +49,7 @@ for i=1:Gtst.s
     end
 
     if coh                          % coherent edge classifier
-        ind(i).coh  = get_max_edges(P.d_opt);
+        ind(i).coh  = get_max_edges(P.d_opt,alg.num_coh_vertices);
         yhat.coh(i) = ie_classify(Atst(:,:,i),P,ind(i).coh);
     end
 
