@@ -54,7 +54,7 @@ constants = get_constants(adjacency_matrices,class_labels);     % get constants 
 disp(Lhatin)
 
 %% test using hold-out training data
-[Lhats inds] = wrapper_hold_out_unbalanced_unlabeled_training_data(adjacency_matrices,class_labels,alg);
+[Lhats inds num_iters] = wrapper_hold_out_unbalanced_unlabeled_training_data(adjacency_matrices,class_labels,alg);
 
 %% make plots
 
