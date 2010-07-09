@@ -13,7 +13,7 @@ P.E1(P.E1==0) = eps;
 P.E1(P.E1==1) = 1-eps;
 
 P.d_pos = abs(P.E0-P.E1);           % position difference
-P.d_opt = abs(P.E0./(P.E0.*(1-P.E0)) - P.E1./(P.E1.*(1-P.E1))); % optimal difference
+P.d_opt = abs(P.E0./sqrt(P.E0.*(1-P.E0)) - P.E1./sqrt(P.E1.*(1-P.E1))); % optimal difference
 
 % pre-compute constants for bernoulli distribution
 P.lnE0  = log(P.E0);

@@ -44,12 +44,12 @@ for i=1:Gtst.s
     end
 
     if inc                          % incoherent edge classifier
-        ind(i).inc = get_inc_edges(P.d_pos,alg.num_inc_edges);
+        ind(i).inc = get_inc_edges(P.d_opt,alg.num_inc_edges);
         yhat.inc(i)= ie_classify(Atst(:,:,i),P,ind(i).inc);
     end
 
     if coh                          % coherent edge classifier
-        ind(i).coh  = get_max_edges(P.d_pos);
+        ind(i).coh  = get_max_edges(P.d_opt);
         yhat.coh(i) = ie_classify(Atst(:,:,i),P,ind(i).coh);
     end
 

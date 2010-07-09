@@ -26,6 +26,13 @@ adjacency_matrices(:,:,1:siz0(3))=A0;
 adjacency_matrices(:,:,siz0(3)+1:siz0(3)+siz1(3))=A1;
 class_labels=[zeros(1,siz0(3)) ones(1,siz1(3))];
 
+% % make vertices unlabeled
+% for i=1:params.s
+%     q=randperm(n);
+%     A=adjacency_matrices(:,:,i);
+%     adjacency_matrices(:,:,i)=A(q,q);
+% end
+
 datadir = '~/Research/necog/data/sims/';
 figdir  = '~/Research/necog/figs/sims/';
 fname   = 'kidney_egg';
