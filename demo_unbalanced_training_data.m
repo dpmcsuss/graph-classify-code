@@ -46,4 +46,4 @@ est_params  = get_params(adjacency_matrices,constants);         % estimate param
 
 plot_params(est_params,alg,params)                              % plot params and estimated params
 plot_misclassification(Lhats,inds,constants,alg)                % plot misclassification rates and edge detection rates
-plot_recovered_subspaces(constants,est_params,alg)              % plot recovered subspaces
+plot_recovered_subspaces(constants,est_params,alg)              % plot recovered subspaces 
