@@ -6,7 +6,6 @@ gray=0.75*[1 1 1];
 lw=2;
 fs=12;
 
-
 if isfield(alg,'signal_subgraph_ind'), subplot(121), hold all; end
 h(1)=errorbar(alg.num_train_samples,mean(Lhats.nb,2),var(Lhats.nb,[],2),'color',gray,'linestyle','--','linewidth',lw);
 h(2)=errorbar(alg.num_train_samples+0.2,mean(Lhats.inc,2),var(Lhats.inc,[],2),'color','k','linestyle','-','linewidth',lw);

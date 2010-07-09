@@ -10,24 +10,24 @@ load([alg.datadir alg.fname])                                       % loads adja
 constants   = get_constants(adjacency_matrices,class_labels);       % get constants like # edges, etc.
 
 alg.signal_subgraph_ind = params.signal_subgraph_ind;               % use true signal subgraph
-alg.nb_ind              = 1:params.n^2;                                     % use naive bayes classifier
+alg.nb_ind              = 1:params.n^2;                             % use naive bayes classifier
 alg.num_inc_edges       = params.num_signal_vertices^2;             % use incoherent classifier with num_signal_vertices^2 edges
 alg.num_coh_edges       = params.num_signal_vertices^2;             % use coherent classifier with num_signal_vertices^2 edges
 alg.num_signal_edges    = params.num_signal_edges;                  % # of signal edges
 
-alg.num_splits          = 10;                                        % # of folds in k-fold cross-validation
-alg.num_repeats         = 10;                                       % # of times to resample using each quadruple of s_trn0, s_trn1, s_tst0, s_tst1
+alg.num_splits          = 10;                                       % # of splits in k-fold cross-validation
+alg.num_repeats         = 10;                                       % # of times to repeat each split
 
-alg.num_class0_train_samples    = round(linspace(10,constants.s0-10,alg.num_splits)); % # of samples to train parameters with
-alg.num_class0_test_samples     = constants.s0-max(alg.num_class0_train_samples)*ones(1,alg.num_splits);                        % # of samples to test performance on
+alg.num_class0_train_samples    = round(linspace(10,constants.s0-10,alg.num_splits));                       % # of samples to train parameters per fold
+alg.num_class0_test_samples     = constants.s0-max(alg.num_class0_train_samples)*ones(1,alg.num_splits);    % # of samples to test performance per fold
 
-alg.num_class1_train_samples    = round(linspace(10,constants.s1-10,alg.num_splits)); % # of samples to train parameters with
-alg.num_class1_test_samples     = alg.num_class0_test_samples;                  % # of samples to test performance on
+alg.num_class1_train_samples    = round(linspace(10,constants.s1-10,alg.num_splits));                       % # of samples to train parameters per fold
+alg.num_class1_test_samples     = alg.num_class0_test_samples;                                              % # of samples to test performance per fold
 
-alg.num_train_samples           = alg.num_class0_train_samples+alg.num_class1_train_samples;
-alg.num_test_samples            = alg.num_class0_test_samples+alg.num_class1_test_samples;
+alg.num_train_samples           = alg.num_class0_train_samples+alg.num_class1_train_samples;                % total number of training samples per fold
+alg.num_test_samples            = alg.num_class0_test_samples+alg.num_class1_test_samples;                  % total number of testing samples per fold
 
-if any(alg.num_class0_train_samples+alg.num_class0_test_samples>constants.s0) || ...
+if any(alg.num_class0_train_samples+alg.num_class0_test_samples>constants.s0) || ...                        % check make sure there are not more samples to use in testing and training then we generated
    any(alg.num_class1_train_samples+alg.num_class1_test_samples>constants.s1), 
     error('cannot have more testing and training samples than total samples'); 
 end
