@@ -1,7 +1,7 @@
 
 % load('data/bal2.mat');
 
-s=1000;
+s=100;
 x=0.2*randn(8,s);
 x=x+repmat([0 0 1 1 0 1 1 0]',1,s);
 

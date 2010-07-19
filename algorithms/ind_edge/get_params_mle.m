@@ -1,4 +1,4 @@
-function P = get_params_ind_edge(adjacency_matrices,constants)
+function P = get_params_mle(adjacency_matrices,constants)
 % this funtion gets the parameters necessary for independent edge algorithms
 
 % NOTE THAT THIS IS A HACK AND WE WILL MODIFY TO USE DIRICHLET PRIOR

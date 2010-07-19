@@ -74,8 +74,8 @@ disp(Lhatin)
 
 %% test using hold-out training data
 
-alg.num_repeats=2;  % # of times to repeat
-alg.num_splits=3;   % # of times to repeat
+alg.num_splits=10;   % # of times to repeat
+alg.num_repeats=10;  % # of times to repeat
 
 [Lhats alg inds] = get_Lhat_hold_out(adjacency_matrices,class_labels,alg);
 

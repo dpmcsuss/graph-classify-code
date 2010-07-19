@@ -37,7 +37,7 @@ for i=1:ncontrols
     end
 end
 
-ver='left_right';
+ver='leftright_control';
 
 switch ver
     case 'left_right'
@@ -78,11 +78,12 @@ constants = get_constants(adjacency_matrices,class_labels);     % get constants 
 
 alg.ind_edge        = true;
 alg.nb_ind          = find(triu(ones(constants.n),1));         % these graphs are undirected
-% alg.num_inc_edges   = 100; 
-% alg.num_coh_vertices= 10; 
+alg.num_inc_edges   = 100; 
+alg.num_coh_vertices= 10; 
 
-% alg.knn             = true;
-% alg.knn_vanilla     = true;
+alg.knn             = false;
+alg.knn_vanilla     = true;
+
 
 %% test using in-sample training data
 constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code

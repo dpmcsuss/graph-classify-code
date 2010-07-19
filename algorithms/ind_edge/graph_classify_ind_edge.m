@@ -19,11 +19,11 @@ function [Lhat ind Lvar P yhat] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gts
 %   yhat:   list of estimated class identity for each graph
 
 if nargin==3                            % in-sample classifier for debugging purposes
-    P = get_params_ind_edge(Atrn,Gtrn); 
+    P = get_params_mle(Atrn,Gtrn); 
     Atst = Atrn;
     Gtst = Gtrn;
 else                                    % update parameters using only training data   
-    P = get_params(Atrn(:,:,1:Gtrn.s),Gtrn);  
+    P = get_params_mle(Atrn(:,:,1:Gtrn.s),Gtrn);  
 end 
 
 % initialize stuff for the different classifiers

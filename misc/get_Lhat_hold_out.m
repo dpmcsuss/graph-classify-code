@@ -20,8 +20,7 @@ if ~isfield(alg,'num_splits'), alg.num_splits = 1; end              % # of split
 if ~isfield(alg,'num_repeats'), alg.num_repeats = 1; end            % # of times to repeat each split
 
 if ~isfield(alg,'num_class0_train_samples')                         % # of samples to train class 0 parameters per fold
-    temp=min(10,constants.s0-1);
-    alg.num_class0_train_samples    = round(linspace(1,constants.s0-temp,alg.num_splits));
+    alg.num_class0_train_samples    = round(linspace(1,constants.s0-2,alg.num_splits));
 end
 
 if ~isfield(alg,'num_class0_test_samples')                          % # of samples to test class 1 per fold
@@ -29,8 +28,7 @@ if ~isfield(alg,'num_class0_test_samples')                          % # of sampl
 end
 
 if ~isfield(alg,'num_class1_train_samples')                         % # of samples to train class 1 parameters per fold
-    temp=min(10,constants.s0-1);
-    alg.num_class1_train_samples    = round(linspace(1,constants.s1-temp,alg.num_splits));
+    alg.num_class1_train_samples    = round(linspace(1,constants.s1-2,alg.num_splits));
 end
 
 if ~isfield(alg,'num_class1_test_samples')                          % # of samples to test class 1 per fold

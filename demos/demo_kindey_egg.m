@@ -14,9 +14,9 @@ alg.num_inc_edges      = params.num_signal_edges;                  % use incoher
 alg.num_coh_vertices   = params.num_signal_vertices;               % use coherent classifier with num_signal_vertices^2 edges
 alg.num_signal_edges   = params.num_signal_edges;                  % # of signal edges
 
-alg.knn             = false;
+alg.knn             = true;
 alg.knn_vanilla     = true;
-alg.knn_lmnn        = false;
+alg.knn_lmnn        = true;
 alg.knn_mmlmnn      = false;
 
 alg.num_splits      = 3;
