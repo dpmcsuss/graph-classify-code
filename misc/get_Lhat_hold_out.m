@@ -1,4 +1,4 @@
-function [Lhats alg inds] = get_Lhat_hold_out(adjacency_matrices,class_labels,alg)
+function [Lhat alg inds] = get_Lhat_hold_out(adjacency_matrices,class_labels,alg)
 % this function computes trains and classifies using held-out data
 % unbalanced training data is permitted
 % number test samples can be a function of number of training samples
@@ -9,9 +9,10 @@ function [Lhats alg inds] = get_Lhat_hold_out(adjacency_matrices,class_labels,al
 %   alg: specifies which algorithms to use, and which parameters for each alg
 % 
 % OUTPUT:
-%   Lhats: structure with Lhat from each algorithm run
-%   alg: some alg fields can be set by default in here, and must be output for displaying results
-%   inds: indices of signal subgraphs found by various algorithms
+%   Lhat: estimate misclassification rates
+%   alg: structure is modified within
+%   inds: ind_edge estimated signal subgraphs
+% 
 
 constants = get_constants(adjacency_matrices,class_labels);         % get constants to ease classification code
 
@@ -19,7 +20,8 @@ if ~isfield(alg,'num_splits'), alg.num_splits = 1; end              % # of split
 if ~isfield(alg,'num_repeats'), alg.num_repeats = 1; end            % # of times to repeat each split
 
 if ~isfield(alg,'num_class0_train_samples')                         % # of samples to train class 0 parameters per fold
-    alg.num_class0_train_samples    = round(linspace(1,constants.s0-1,alg.num_splits));
+    temp=min(10,constants.s0-1);
+    alg.num_class0_train_samples    = round(linspace(1,constants.s0-temp,alg.num_splits));
 end
 
 if ~isfield(alg,'num_class0_test_samples')                          % # of samples to test class 1 per fold
@@ -27,7 +29,8 @@ if ~isfield(alg,'num_class0_test_samples')                          % # of sampl
 end
 
 if ~isfield(alg,'num_class1_train_samples')                         % # of samples to train class 1 parameters per fold
-    alg.num_class1_train_samples    = round(linspace(1,constants.s1-1,alg.num_splits));
+    temp=min(10,constants.s0-1);
+    alg.num_class1_train_samples    = round(linspace(1,constants.s1-temp,alg.num_splits));
 end
 
 if ~isfield(alg,'num_class1_test_samples')                          % # of samples to test class 1 per fold
@@ -41,18 +44,9 @@ if any(alg.num_class0_train_samples+alg.num_class0_test_samples>constants.s0) ||
         any(alg.num_class1_train_samples+alg.num_class1_test_samples>constants.s1),
     error('cannot have more testing and training samples than total samples');
 end
-
-if ~isfield(alg,'ind_edge'),    alg.ind_edge    = true;     end
-if ~isfield(alg,'knn'),         alg.knn         = false;    end
-
-inds{alg.num_splits} = [];                                       % initialize memory for indices (not really though)
-
-if alg.ind_edge
-    if isfield(alg,'signal_subgraph_ind'), Lhats.tru = zeros(alg.num_splits,alg.num_repeats); end
-    Lhats.nb    = zeros(alg.num_splits,alg.num_repeats);
-    Lhats.inc   = zeros(alg.num_splits,alg.num_repeats);
-    Lhats.coh   = zeros(alg.num_splits,alg.num_repeats);
-end
+if ~isfield(alg,'ind_edge'),    alg.ind_edge    = true;  end
+if ~isfield(alg,'knn'),         alg.knn         = false; end
+inds{1,1}=[];
 
 for i=1:alg.num_splits
 
@@ -77,22 +71,19 @@ for i=1:alg.num_splits
         Gtst = get_constants(Atst,ytst);
 
         if alg.ind_edge
-            [Lhat Lvar ind] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst);
-            if isfield(alg,'signal_subgraph_ind'),
-                Lhats.tru(i,j)  = Lhat.tru;
-                if j==1, inds{i} = ind; end % just store indices from first run, ignoring nb (as that is all), needed for plotting
-            end
-            Lhats.nb(i,j)   = Lhat.nb;
-            Lhats.inc(i,j)  = Lhat.inc;
-            Lhats.coh(i,j)  = Lhat.coh;
+            [Lhat_ind_edge(i,j) inds{i,j}] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst);
         end
 
         if alg.knn
-            Lhat_knn = graph_classify_knn(Atrn,Gtrn,alg,Atst,Gtst);
-            Lhats.knn(i,j)=Lhat_knn.knn;
+            Lhat_knn(i,j) = graph_classify_knn(Atrn,Gtrn,alg,Atst,Gtst);
         end
 
     end
 end
 
-if alg.save, save([alg.datadir alg.fname '_results'],'Lhats','inds'); end
+% combine Lhats into single struct
+Lhat(alg.num_splits,alg.num_repeats)=struct;
+if alg.ind_edge,    Lhat=catstruct(Lhat,Lhat_ind_edge); end
+if alg.knn,         Lhat=catstruct(Lhat,Lhat_knn);      end
+
+if alg.save, save([alg.datadir alg.fname '_results'],'Lhat','alg','inds'); end

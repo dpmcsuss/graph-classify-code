@@ -14,8 +14,16 @@ ls{4}='-.';
 
 fields=fieldnames(Lhats);
 
+for i=1:alg.num_splits
+    for j=1:alg.num_repeats
+        for k=1:length(fields)
+           temp.(fields{k})(i,j)=Lhats(i,j).(fields{k}); 
+        end
+    end
+end
+
 for i=1:length(fields)
-    errorbar(alg.num_train_samples,mean(Lhats.(fields{i}),2),var(Lhats.(fields{i}),[],2),...
+    errorbar(alg.num_train_samples,mean(temp.(fields{i}),2),std(temp.(fields{i}),[],2),...
         'color',colors{mod(i,2)+1},'linestyle',ls{mod(i,3)+1},'linewidth',2);
 end
 

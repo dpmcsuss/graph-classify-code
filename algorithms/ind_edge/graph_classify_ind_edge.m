@@ -1,4 +1,4 @@
-function [Lhat Lvar ind P yhat] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst)
+function [Lhat ind Lvar P yhat] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst)
 % this script classifies using a number of different approaches
 % INPUT:
 % Atrn:     n x n x s array, where |V|=n, and s is the number of samples
@@ -13,8 +13,8 @@ function [Lhat Lvar ind P yhat] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gts
 % 
 % OUTPUT:
 %   Lhat:   misclassification rate for each algorithm implemented
-%   Lvar:   misclassification variance for each algorithm implemented
 %   ind:    index of edges used for each algorithm implemented
+%   Lvar:   misclassification variance for each algorithm implemented
 %   P:      parameter estimates
 %   yhat:   list of estimated class identity for each graph
 
