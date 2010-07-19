@@ -1,7 +1,7 @@
 %% generate adjacency matrices and labels
 clear; clc
 
-load('meanROIThick');
+load('~/Research/necog/data/huiguang/meanROIThick');
 siz = size(meanROIThick);
 
 nleft=20;
@@ -37,7 +37,7 @@ for i=1:ncontrols
     end
 end
 
-ver='leftright_control';
+ver='left_right';
 
 switch ver
     case 'left_right'
@@ -76,35 +76,25 @@ if alg.save, save([alg.datadir alg.fname],'adjacency_matrices','class_labels'); 
 
 constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
 
-alg.nb_ind  = 1:constants.n^2;                                  % use naive bayes classifier
-alg.num_inc_edges = constants.n;                                % use incoherent classifier with num_signal_vertices^2 edges
-alg.num_coh_edges = constants.n;                                % use coherent classifier with num_signal_vertices^2 edges
+alg.ind_edge        = true;
+alg.nb_ind          = find(triu(ones(constants.n),1));         % these graphs are undirected
+% alg.num_inc_edges   = 100; 
+% alg.num_coh_vertices= 10; 
+
+% alg.knn             = true;
+% alg.knn_vanilla     = true;
 
 %% test using in-sample training data
 constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
-[Lhatin Lvarin ind Pin yhatin] = graph_classify_ie(adjacency_matrices,constants,alg); % compute in-sample classification accuracy
+[Lhatin Lvarin ind Pin yhatin] = graph_classify_ind_edge(adjacency_matrices,constants,alg); % compute in-sample classification accuracy
 disp(Lhatin)
 
 %% test using hold-out training data
 
-alg.num_splits          = 10;                                        % # of folds in k-fold cross-validation
-alg.num_repeats         = 10;                                       % # of times to resample using each quadruple of s_trn0, s_trn1, s_tst0, s_tst1
+alg.num_splits  = 5;    % # of folds in k-fold cross-validation
+alg.num_repeats = 10;    % # of times to resample using each quadruple of s_trn0, s_trn1, s_tst0, s_tst1
 
-alg.num_class0_train_samples    = round(linspace(1,constants.s0-2,alg.num_splits)); % # of samples to train parameters with
-alg.num_class0_test_samples     = constants.s0-max(alg.num_class0_train_samples)*ones(1,alg.num_splits);                        % # of samples to test performance on
-
-alg.num_class1_train_samples    = round(linspace(1,constants.s1-2,alg.num_splits)); % # of samples to train parameters with
-alg.num_class1_test_samples     = constants.s1-max(alg.num_class1_train_samples)*ones(1,alg.num_splits);                  % # of samples to test performance on
-
-alg.num_train_samples           = alg.num_class0_train_samples+alg.num_class1_train_samples;
-alg.num_test_samples            = alg.num_class0_test_samples+alg.num_class1_test_samples;
-
-if any(alg.num_class0_train_samples+alg.num_class0_test_samples>constants.s0) || ...
-   any(alg.num_class1_train_samples+alg.num_class1_test_samples>constants.s1), 
-    error('cannot have more testing and training samples than total samples'); 
-end
-
-[Lhats inds] = wrapper_hold_out_unbalanced_training_data(adjacency_matrices,class_labels,alg);
+[Lhats alg inds] = get_Lhat_hold_out(adjacency_matrices,class_labels,alg);
 
 %% make plots
 
@@ -113,4 +103,4 @@ est_params  = get_params(adjacency_matrices,constants);         % estimate param
 
 plot_params(est_params,alg)                                     % plot params and estimated params
 plot_recovered_subspaces(constants,est_params,alg)              % plot recovered subspaces
-plot_misclassification(Lhats,inds,constants,alg)                % plot misclassification rates and edge detection rates
+plot_Lhats(Lhats,alg)                                           % plot misclassification rates

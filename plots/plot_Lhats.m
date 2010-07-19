@@ -1,6 +1,6 @@
 function plot_Lhats(Lhats,alg)
 
-figure(2), clf, hold all
+figure(4), clf, hold all
 
 fs=12;      
 
