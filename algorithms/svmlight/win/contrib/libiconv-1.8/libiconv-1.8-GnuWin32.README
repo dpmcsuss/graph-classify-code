@@ -1,0 +1,37 @@
+* LibIconv-1.8 for Windows *
+============================
+
+What is it?
+-----------
+LibIconv: convert between character encodings
+
+Description
+-----------
+LibIconv converts from one character encoding to another through Unicode
+conversion (see Web page for full list of supported encodings). It has
+also limited support for transliteration, i.e. when a character cannot be
+represented in the target character set, it is approximated through one
+or several similar looking characters. It is useful if your application
+needs to support multiple character encodings, but that support lacks from
+your system.
+	 
+Homepage
+--------
+http://www.gnu.org/software/libiconv
+	 
+System
+------
+- Windows 95 / 98 / ME / NT / 2000 / XP with msvcrt.dll
+- if msvcrt.dll is not in your Windows/System folder, get it
+  by installing Internet Explorer 4.0 or higher
+- libintl <http://gnuwin32.sourceforge.net/packages/libintl.htm> 
+
+Notes
+-----
+- Bugs and questions on this MS Windows port: gnuwin32@users.sourceforge.net
+
+Package Availability
+--------------------
+- in: http://sourceforge.net/project/showfiles.php?group_id=23617
+- as: libiconv-1.8bin.zip
+

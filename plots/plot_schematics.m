@@ -158,4 +158,75 @@ figname=[alg.figdir alg.fname];
 print('-dpdf',figname)
 saveas(gcf,figname)
 
+%% non-canonical dim red
+T=1000;
+gray=0.7*[1 1 1];
+x=repmat([1; 0.1],1,T).*randn(2,T);
+c=5;
+y=linspace(-c,c,T);
+yy=zeros(T,1)';
 
+q=linspace(-10,10,T);
+qq=[q; q];
+
+c=.8; c2=.5;
+z0=x+[y+c; c2*y-c];
+z1=x+[y-c; c2*y+c];
+
+zz0=x+[yy; yy-.2];
+zz1=x+[yy; yy+.2];
+
+clf
+subplot(131), hold all, 
+scatter(z0(1,:),z0(2,:),'marker','+','markerfacecolor','r','markeredgecolor','r'), 
+scatter(z1(1,:),z1(2,:),'markerfacecolor','b','markeredgecolor','b','sizedata',10), 
+plot(qq,zeros(T,1),'k')
+plot(zeros(T,1),qq,'k')
+xlabel('canonical dimension 1')
+ylabel('canonical dimension 2')
+axis([-4 4 -4 4]), 
+
+
+
+subplot(132), hold all, 
+center=[0 0];
+THETA=linspace(0,2*pi,T);
+radius0=5;
+RHO=ones(1,T)*radius0;
+[X0,Y0] = pol2cart(THETA,RHO);
+radius1=7;
+RHO=ones(1,T)*radius1;
+[X1,Y1] = pol2cart(THETA,RHO);
+
+z0 = x+[X0; Y0];
+z1 = x+[X1; Y1];
+
+scatter(z0(1,:),z0(2,:),'marker','+','markerfacecolor','r','markeredgecolor','r'), 
+scatter(z1(1,:),z1(2,:),'markerfacecolor','b','markeredgecolor','b','sizedata',10), 
+plot(qq,zeros(T,1),'k')
+plot(zeros(T,1),qq,'k')
+xlabel('canonical dimension 1')
+ylabel('canonical dimension 2')
+axis([-10 10 -8 8]), 
+
+
+subplot(133), hold on
+scatter(zz0(1,:),zz0(2,:),'marker','+','markerfacecolor','r','markeredgecolor','r'), 
+scatter(zz1(1,:),zz1(2,:),'markerfacecolor','b','markeredgecolor','b','sizedata',10), 
+plot(qq,zeros(T,1),'k')
+plot(zeros(T,1),qq,'k')
+xlabel('non-canonical dimension 1')
+ylabel('non-canonical dimension 2')
+axis([-2 2 -1 1]), 
+
+wh=[5 1.5]*1.5;   %width and height
+set(gcf,'PaperSize',wh,'PaperPosition',[0 0 wh],'Color','w');
+alg.figdir  = '~/Research/necog/figs/misc/';
+alg.fname   = 'non_canon';
+figname=[alg.figdir alg.fname];
+print('-dpdf',figname)
+saveas(gcf,figname)
+
+%%
+
+% axis([-4 4 -4 4]), 

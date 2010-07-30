@@ -14,8 +14,8 @@ for i=1:siz(3);
     x(3,i)=maxeval(A);      % max eigenvalue (upper bound on max average degree)
     x(4,i)=scan1(A,siz(2)); % scan statistic 1
     x(5,i)=numtri(A);       % number of triangles
-    x(6,i)=clustcoef(A,siz(2)); % clustering coefficient
-    x(7,i)=apl(A,siz(2));   % average path length
+    x(6,i)=apl(A,siz(2));   % average path length
+%     x(7,i)=clustcoef(A,siz(2)); % clustering coefficient
 %     x(8,i)=scan2(A);        % scan statistic 2
 %     x(9,i)=scan3(A);        % scan statistic 3
 end

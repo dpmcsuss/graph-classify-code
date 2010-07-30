@@ -1,4 +1,4 @@
-function [Lhats inds num_iters] = wrapper_hold_out_unbalanced_unlabeled_training_data(adjacency_matrices,class_labels,alg)
+function [Lhats inds num_iters] = get_Lhat_unlabeled_graphs(adjacency_matrices,class_labels,alg)
 
 constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
 inds{alg.max_fw_iters} = [];
@@ -41,7 +41,7 @@ for ii=1:alg.max_fw_iters
     Gtrn = get_constants(Atrn,ytrn);
     Gtst = get_constants(Atst,ytst);
 
-    [Lhat Lvar ind] = graph_classify_ie(Atrn,Gtrn,alg,Atst,Gtst);
+    [Lhat Lvar ind] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst);
 
     if isfield(alg,'signal_subgraph_ind'),
         Lhats.tru(ii)  = Lhat.tru;
