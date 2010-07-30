@@ -9,22 +9,13 @@ function [d,q] = dsproj(x,g,m,n)
 %
 %     This material may be reproduced by or for the U.S. Government pursuant to the copyright license under the clauses at DFARS 252.227-7013 and 252.227-7014.
 %
-interior=true;
+
 [P,Q]=unstack(x,m,n);
 [gP,gQ]=unstack(g,m,n);
 
-%[wP,iter,cost] = dsprojfun(yP,ptol,Debug);
 
+[q,wq,wQ]=assign(-gQ);
+wP=wQ;
 
-
-%[wQ,iter,cost] = dsprojfun(yQ,ptol,Debug);
-if interior==true
-    [q,wq,wQ]=assign(-gQ);
-    %[p,wp,wP]=assign(-gP);
-    p=q; wp=wq; wP=wQ;
-else
-    wQ=perm2mat(assign(-gQ))';
-    wP=perm2mat(assign(-gP))';
-end
 w=stack(wP,wQ,m,n);
 d=w-x;
