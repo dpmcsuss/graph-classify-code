@@ -28,6 +28,8 @@ function [f,myp,x,iter,fs,myps]=sfw(A,B,IMAX,x0)
 %     x is the doubly stochastic matrix (interior point) computed by the FW
 %       method
 %     iter is the number of iterations of FW performed.
+%     fs is ????
+%     myps is the list of myps for each iteration
 %
 % Louis J. Podrazik circa 1996
 % Modified by John M. Conroy, 1996-2010

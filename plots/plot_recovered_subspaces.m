@@ -23,8 +23,8 @@ title('incoherent signal subgraph')
 
 % max degree
 i=i+1; subplot(nrows,ncols,i), cla
-constants.Nmax=constants.n/10;
-ind = get_max_edges(est_params.d_pos);
+if ~isfield(alg,'num_coh_vertices'), alg.num_coh_vertices=round(constants.n/10); end
+ind = get_max_edges(est_params.d_pos,alg.num_coh_vertices);
 delmax=zeros(constants.n);
 delmax(ind)=est_params.d_opt(ind);
 imagesc(delmax);

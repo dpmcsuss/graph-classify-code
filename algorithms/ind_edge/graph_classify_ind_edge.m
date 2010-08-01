@@ -41,6 +41,8 @@ else coh = false; end
 
 if isfield(alg,'num_inc_edges') || isfield(alg,'num_coh_vertices')
     ind(2:Gtst.s)=ind(1);               % pre-allocate memory to speed stuff up
+else
+    ind=[];
 end
 
 for i=1:Gtst.s

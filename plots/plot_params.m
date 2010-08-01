@@ -11,18 +11,18 @@ if nargin==3
     subplot(nrows,ncols,1), cla
     image(60*params.E0/emax)
     colormap('gray')
-    title('estimated class 0 mean')
+    title('class 0 mean')
     xlabel('vertices')
     ylabel('vertices')
 
     subplot(nrows,ncols,2), cla
     image(60*params.E1/emax)
-    title('estimated class 1 mean')
+    title('class 1 mean')
 
     subplot(nrows,ncols,3), cla
-    image(60*(params.E0-params.E1)/emax)
+    image(60*abs(params.E0-params.E1)/emax)
     colormap('gray')
-    title('estimated difference')
+    title('difference')
 end
 
 emax=max(max([est_params.E0(:) est_params.E1(:) abs(est_params.E0(:)-est_params.E1(:))]));
