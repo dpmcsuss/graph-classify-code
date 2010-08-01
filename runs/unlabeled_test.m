@@ -1,4 +1,6 @@
-%% simulate kidney-egg problem
+% this run generates F_{GY}, where F_0 and F_1 are both point masses.
+% this code is for debugging purposes.
+
 clear; clc
 
 n = 10;     % # of vertices
@@ -35,9 +37,9 @@ save([alg.datadir alg.fname],'adjacency_matrices','class_labels','params','alg')
 
 %% setup algorithmic parameters
 
-alg.nb_ind              = 1:n^2;                             % use naive bayes classifier
-alg.num_inc_edges       = 3^2;                  % use incoherent classifier with num_signal_vertices^2 edges
-alg.num_coh_vertices    = 3;               % use coherent classifier with num_signal_vertices^2 edges
+alg.nb_ind              = 1:n^2;            % use independent edge classifier for directed loopy graphs
+alg.num_inc_edges       = 3^2;              % use incoherent classifier with num_signal_vertices^2 edges
+alg.num_coh_vertices    = 3;                % use coherent classifier with num_signal_vertices^2 edges
 alg.signal_subgraph_ind = find(E0~=E1);
 
 %% test using in-sample training data, using vertex labels
