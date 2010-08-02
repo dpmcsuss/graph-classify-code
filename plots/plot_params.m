@@ -43,7 +43,7 @@ colormap('gray')
 title('estimated difference')
 
 if alg.save
-    wh=[6 1.8];   %width and height
+    wh=[6 4];   %width and height
     set(gcf,'PaperSize',wh,'PaperPosition',[0 0 wh],'Color','w');
     figname=[alg.figdir alg.fname '_params'];
     print('-dpdf',figname)

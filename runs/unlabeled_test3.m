@@ -6,32 +6,11 @@ clear; clc
 n = 10;     % # of vertices
 s = 102;    % # of samples
 
-which_sim = 'dense';
+E0=0.5*ones(n);
+E0(1:3,1:3)=0.25;
 
-switch which_sim
-    case 'point_mass'
-        E0=zeros(n);
-        E0([1 12 23])=1;
-
-        E1=zeros(n);
-        E1(1:3,1:3)=1;
-    case 'diag_block'
-        E0=0.5*ones(n);
-        E0([1 12 23])=0.25;
-
-        E1=0.5*ones(n);
-        E1(1:3,1:3)=0.25;
-    case 'block'
-        m=5;
-        E0=0.5*ones(n);
-        E0(1:m,1:m)=0.2;
-
-        E1=0.5*ones(n);
-        E1(1:m,1:m)=0.8;
-    case 'dense'
-        E0=rand(n);
-        E1=rand(n);
-end
+E1=0.5*zeros(n);
+E1(1:3,1:3)=0.75;
 
 A0 = repmat(E0,[1 1 s/2]) > rand(n,n,s/2);         % class 0 training samples
 A1 = repmat(E1,[1 1 s/2]) > rand(n,n,s/2);         % class 1
@@ -49,9 +28,9 @@ params.s = s;
 params.E0=E0;
 params.E1=E1;
 
-alg.datadir = '~/Research/data/sims/unlabeled/';
-alg.figdir  = '~/Research/figs/sims/unlabeled/';
-alg.fname   = which_sim;
+alg.datadir = '~/Research/data/sims/';
+alg.figdir  = '~/Research/figs/sims/';
+alg.fname   = 'block';
 alg.save = 1;
 
 save([alg.datadir alg.fname],'adjacency_matrices','class_labels','params','alg')
@@ -83,7 +62,7 @@ Atst=adjacency_matrices(:,:,tst_ind);
 Gtrn=get_constants(Atrn,ytrn);
 Gtst=get_constants(Atst,ytst);
 
-Lhat_labeled = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst)
+Lhatin2 = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst)
 
 %% permute testing data
 
@@ -95,50 +74,35 @@ for i=1:constants.s
 end
 Atst=As(:,:,tst_ind);
 
-% test classification performance when vertex labels are permuted 
-% (should be just less than 1/2)
-% (in other words, we didn't try to solve the isomorphism problem first)
-Lhat_permuted = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst)
+% test classification performance when data is permuted (should be just
+% less than 1/2)
+Lhatin3 = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst)
 
 %% approximately solve isomorphism problem
 
 k=0;
 alg.fw_max_iter=30;
-B=Atrn(:,:,1);
 for j=tst_ind
     k=k+1;
+    if j <= constants.s0, B=Atrn(:,:,1); else B=Atrn(:,:,2); end
     A=As(:,:,j);
     [f,myp,x,iter,fs,myps{k}]=sfw(B,-A,alg.fw_max_iter);
 end
 
-B=Atrn(:,:,2);
-for j=tst_ind
-    k=k+1;
-    A=As(:,:,j);
-    [f,myp,x,iter,fs,myps{k}]=sfw(B,-A,alg.fw_max_iter);
-end
 
-%% compute 
+%%
 
-Atst0=zeros(n,n,length(tst_ind));
-Atst1=zeros(n,n,length(tst_ind));
-
+Atst=zeros(n,n,length(tst_ind));
 for j=1:alg.fw_max_iter
     k=0;
     for l=tst_ind
         k=k+1;
+        len=length(myps{k});
+        if j>len, jj=len; else jj=j; end
         A=As(:,:,l);
-
-        len0=length(myps{k});
-        if j>len0, j0=len0; else j0=j; end
-        Atst0(:,:,k)=A(myps{k}{j0},myps{k}{j0});
-        
-        len1=length(myps{k+Gtst.s});
-        if j>len1, j1=len1; else j1=j; end
-        Atst1(:,:,k)=A(myps{k+Gtst.s}{j1},myps{k+Gtst.s}{j1});
-
+        Atst(:,:,k)=A(myps{k}{jj},myps{k}{jj});
     end
-    Lhats{j} = graph_classify_unlabeled_ind_edge(Atrn,Gtrn,alg,Atst0,Atst1,Gtst);
+    Lhats{j} = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst);
 end
 
 
@@ -147,5 +111,5 @@ end
 est_params  = get_params(adjacency_matrices,constants);         % estimate parameters from data
 
 plot_params(est_params,alg,params)                              % plot params and estimated params
-% plot_recovered_subspaces(constants,est_params,alg)              % plot recovered subspaces
-xxx = plot_unlabeled_rates(Lhat_permuted,Lhats,Lhat_labeled,alg);
+plot_recovered_subspaces(constants,est_params,alg)              % plot recovered subspaces
+plot_unlabeled_rates(Lhatin3,Lhats,alg)
