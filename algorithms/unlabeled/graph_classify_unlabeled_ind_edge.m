@@ -1,4 +1,4 @@
-function [Lhat ind Lvar P yhat] = graph_classify_unlabeled_ind_edge(Atrn,Gtrn,alg,Atst0,Atst1,Gtst)
+function [Lhat ind Lvar P yhat] = graph_classify_unlabeled_ind_edge(Atrn,Gtrn,alg,Atst0,Atst1,Gtst,P)
 % this script classifies using a number of different approaches
 % INPUT:
 % Atrn:     n x n x s array, where |V|=n, and s is the number of samples
@@ -18,12 +18,12 @@ function [Lhat ind Lvar P yhat] = graph_classify_unlabeled_ind_edge(Atrn,Gtrn,al
 %   P:      parameter estimates
 %   yhat:   list of estimated class identity for each graph
 
-if nargin==3                            % in-sample classifier for debugging purposes
+if nargin==6                            % in-sample classifier for debugging purposes
     P = get_params_mle(Atrn,Gtrn); 
-    Atst = Atrn;
-    Gtst = Gtrn;
+%     Atst = Atrn;
+%     Gtst = Gtrn;
 else                                    % update parameters using only training data   
-    P = get_params_mle(Atrn(:,:,1:Gtrn.s),Gtrn);  
+%     P = get_params_mle(Atrn(:,:,1:Gtrn.s),Gtrn);  
 end 
 
 % initialize stuff for the different classifiers

@@ -6,7 +6,7 @@ clear; clc
 n = 10;     % # of vertices
 s = 102;    % # of samples
 
-which_sim = 'dense';
+which_sim = 'block';
 
 switch which_sim
     case 'point_mass'
@@ -41,6 +41,7 @@ siz1=size(A1);                                          % size of array storing 
 adjacency_matrices(:,:,1:siz0(3))=A0;                   % create adjacency_matrices to store all sampled graphs
 adjacency_matrices(:,:,siz0(3)+1:siz0(3)+siz1(3))=A1;   % add class 1 samples
 class_labels=[zeros(1,siz0(3)) ones(1,siz1(3))];        % vector of class labels
+constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
 
 %% save stuff
 params.n = n;
@@ -49,12 +50,26 @@ params.s = s;
 params.E0=E0;
 params.E1=E1;
 
+params.lnE0  = log(params.E0);
+params.ln1E0 = log(1-params.E0);
+params.lnE1  = log(params.E1);
+params.ln1E1 = log(1-params.E1);
+
+% log-priors
+params.lnprior0 = log(constants.s0/constants.s);
+params.lnprior1 = log(constants.s1/constants.s);
+
+% various measures to compute difference matrix
+params.d_pos = abs(params.E0-params.E1);           % position difference
+params.d_opt = abs(params.E0./sqrt(params.E0.*(1-params.E0)) - params.E1./sqrt(params.E1.*(1-params.E1))); % optimal difference
+
+
 alg.datadir = '~/Research/data/sims/unlabeled/';
 alg.figdir  = '~/Research/figs/sims/unlabeled/';
 alg.fname   = which_sim;
 alg.save = 1;
 
-save([alg.datadir alg.fname],'adjacency_matrices','class_labels','params','alg')
+save([alg.datadir alg.fname],'adjacency_matrices','class_labels','params','alg','constants')
 
 %% setup algorithmic parameters
 
@@ -64,7 +79,6 @@ alg.num_coh_vertices    = 3;                % use coherent classifier with num_s
 alg.signal_subgraph_ind = find(E0~=E1);
 
 %% test using in-sample training data, using vertex labels
-constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
 [Lhatin ind Pin yhatin] = graph_classify_ind_edge(adjacency_matrices,constants,alg); % compute in-sample classification accuracy
 disp(Lhatin)
 
@@ -138,7 +152,7 @@ for j=1:alg.fw_max_iter
         Atst1(:,:,k)=A(myps{k+Gtst.s}{j1},myps{k+Gtst.s}{j1});
 
     end
-    Lhats{j} = graph_classify_unlabeled_ind_edge(Atrn,Gtrn,alg,Atst0,Atst1,Gtst);
+    Lhats{j} = graph_classify_unlabeled_ind_edge(Atrn,Gtrn,alg,Atst0,Atst1,Gtst,params);
 end
 
 
