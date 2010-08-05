@@ -22,19 +22,21 @@ switch which_sim
         E1=0.5*ones(n);
         E1(1:3,1:3)=0.25;
     case 'block'
-        m=3;
+        m=5;
         E0=0.5*ones(n);
-        E0(1:m,1:m)=0.25;
+        E0(1:m,1:m)=0.2;
 
         E1=0.5*ones(n);
-        E1(1:m,1:m)=0.75;
+        E1(1:m,1:m)=0.8;
     case 'dense'
-        E0=rand(n);
+         E0=rand(n);
         E1=rand(n);
 end
 
+num_iters=100;
+rates=zeros(num_iters,32);
 
-for ii=1:100
+for ii=1:num_iters
 
     A0 = repmat(E0,[1 1 s/2]) > rand(n,n,s/2);         % class 0 training samples
     A1 = repmat(E1,[1 1 s/2]) > rand(n,n,s/2);         % class 1
@@ -72,7 +74,7 @@ for ii=1:100
     alg.fname   = which_sim;
     alg.save = 1;
 
-    save([alg.datadir alg.fname],'adjacency_matrices','class_labels','params','alg','constants')
+%     save([alg.datadir alg.fname],'adjacency_matrices','class_labels','params','alg','constants')
 
     %% setup algorithmic parameters
 
@@ -105,11 +107,11 @@ for ii=1:100
     %% permute testing data
 
     As=adjacency_matrices;
-    for i=1:constants.s
-        q=randperm(constants.n);
-        A=As(:,:,i);
-        As(:,:,i)=A(q,q);
-    end
+%     for i=1:constants.s
+%         q=randperm(constants.n);
+%         A=As(:,:,i);
+%         As(:,:,i)=A(q,q);
+%     end
     Atst=As(:,:,tst_ind);
 
     % test classification performance when vertex labels are permuted
@@ -125,14 +127,14 @@ for ii=1:100
     for j=tst_ind
         k=k+1;
         A=As(:,:,j);
-        [f,myp,x,iter,fs,myps{k}]=sfw(B,-A,alg.fw_max_iter);
+        [f,myp,x,iter,fs{ii,k},myps{k}]=sfw(B,-A,alg.fw_max_iter);
     end
 
     B=Atrn(:,:,2);
     for j=tst_ind
         k=k+1;
         A=As(:,:,j);
-        [f,myp,x,iter,fs,myps{k}]=sfw(B,-A,alg.fw_max_iter);
+        [f,myp,x,iter,fs{ii,k},myps{k}]=sfw(B,-A,alg.fw_max_iter);
     end
 
     %% compute
@@ -167,12 +169,16 @@ for ii=1:100
 
 end
 
-
+%%
+plot(mean(rates.nb))
+axis([0 32 0 0.5])
+ylabel('Lhat')
+xlabel('# of iterations')
 
 %% make plots
 
 est_params  = get_params(adjacency_matrices,constants);         % estimate parameters from data
-
-plot_params(est_params,alg,params)                              % plot params and estimated params
-% plot_recovered_subspaces(constants,est_params,alg)              % plot recovered subspaces
-xxx = plot_unlabeled_rates(Lhat_permuted,Lhats,Lhat_labeled,alg);
+% 
+% plot_params(est_params,alg,params)                              % plot params and estimated params
+% % plot_recovered_subspaces(constants,est_params,alg)              % plot recovered subspaces
+% xxx = plot_unlabeled_rates(Lhat_permuted,Lhats,Lhat_labeled,alg);
