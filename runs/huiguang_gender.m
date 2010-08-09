@@ -1,8 +1,8 @@
 clear; clc
 
 %% generate adjacency matrices and labels
-female_left=xlsread('~/Research/necog/data/huiguang/Female_Left_ROIThick.xls');
-female_right=xlsread('~/Research/necog/data/huiguang/Female_Right_ROIThick.xls');
+female_left=xlsread('/Users/joshyv/Research/data/MRI/huiguang/Female_Left_ROIThick.xls');
+female_right=xlsread('/Users/joshyv/Research/data/MRI/huiguang/Female_Right_ROIThick.xls');
 female = [female_left female_right];
 female(1,:)=[];
 siz = size(female);
@@ -17,8 +17,8 @@ for i=1:siz(1)
     end
 end
 
-male_left=xlsread('~/Research/necog/data/huiguang/male_Left_ROIThick.xls');
-male_right=xlsread('~/Research/necog/data/huiguang/male_Right_ROIThick.xls');
+male_left=xlsread('/Users/joshyv/Research/data/MRI/huiguang/male_Left_ROIThick.xls');
+male_right=xlsread('/Users/joshyv/Research/data/MRI/huiguang/male_Right_ROIThick.xls');
 male = [male_left male_right];
 male(1,:)=[];
 
@@ -48,8 +48,8 @@ for i=1:length(adjacency_matrices)
     adjacency_matrices(:,:,i)=A;
 end
 
-alg.datadir = '~/Research/necog/data/huiguang/';
-alg.figdir  = '~/Research/necog/figs/huiguang/';
+alg.datadir = '~/Research/data/MRI/huiguang/';
+alg.figdir  = '~/Research/figs/MRI/huiguang/';
 alg.fname   = 'gender';
 alg.save = 1;
 

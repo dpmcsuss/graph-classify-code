@@ -1,7 +1,7 @@
 clear; clc
 
-alg.datadir = '~/Research/necog/data/sims/';
-alg.figdir  = '~/Research/necog/figs/sims/';
+alg.datadir = '~/Research/data/sims/labeled/';
+alg.figdir  = '~/Research/figs/sims/labeled/';
 alg.fname   = 'kidney_egg';
 alg.save    = 0;
 
@@ -16,7 +16,7 @@ alg.num_signal_edges   = params.num_signal_edges;                  % # of signal
 
 alg.knn             = true;
 alg.knn_vanilla     = true;
-alg.knn_lmnn        = true;
+alg.knn_lmnn        = false;
 alg.knn_mmlmnn      = false;
 
 alg.num_splits      = 3;

@@ -34,7 +34,7 @@ xlabel('# of iterations')
 if alg.save
     wh=[4 3];   %width and height
     set(gcf,'PaperSize',wh,'PaperPosition',[0 0 wh],'Color','w');
-    figname=[alg.figdir alg.fname '_error'];
+    figname=[alg.figdir alg.fname '_errorrates'];
     print('-dpdf',figname)
     saveas(gcf,figname)
 end
