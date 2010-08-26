@@ -20,7 +20,7 @@ if ~isfield(alg,'num_splits'), alg.num_splits = 1; end              % # of split
 if ~isfield(alg,'num_repeats'), alg.num_repeats = 1; end            % # of times to repeat each split
 
 if ~isfield(alg,'num_class0_train_samples')                         % # of samples to train class 0 parameters per fold
-    alg.num_class0_train_samples    = round(linspace(5,constants.s0-2,alg.num_splits));
+    alg.num_class0_train_samples    = round(linspace(5,constants.s0-10,alg.num_splits));
 end
 
 if ~isfield(alg,'num_class0_test_samples')                          % # of samples to test class 1 per fold
@@ -28,7 +28,7 @@ if ~isfield(alg,'num_class0_test_samples')                          % # of sampl
 end
 
 if ~isfield(alg,'num_class1_train_samples')                         % # of samples to train class 1 parameters per fold
-    alg.num_class1_train_samples    = round(linspace(5,constants.s1-2,alg.num_splits));
+    alg.num_class1_train_samples    = round(linspace(5,constants.s1-10,alg.num_splits));
 end
 
 if ~isfield(alg,'num_class1_test_samples')                          % # of samples to test class 1 per fold
@@ -44,6 +44,7 @@ if any(alg.num_class0_train_samples+alg.num_class0_test_samples>constants.s0) ||
 end
 if ~isfield(alg,'ind_edge'),    alg.ind_edge    = true;  end
 if ~isfield(alg,'knn'),         alg.knn         = false; end
+if ~isfield(alg,'bayes_plugin'),alg.bayes_plugin= false;  end
 inds{1,1}=[];
 
 for i=1:alg.num_splits
@@ -65,8 +66,8 @@ for i=1:alg.num_splits
         ytrn = [zeros(1,length(y0trn)) ones(1,length(y1trn))];
         ytst = [zeros(1,length(y0tst)) ones(1,length(y1tst))];
 
-        Gtrn = get_constants(Atrn,ytrn);
-        Gtst = get_constants(Atst,ytst);
+        Gtrn = get_constants(Atrn,ytrn,alg.directed,alg.loopy);
+        Gtst = get_constants(Atst,ytst,alg.directed,alg.loopy);
 
         if alg.ind_edge
             [Lhat_ind_edge(i,j) inds{i,j}] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst);
@@ -75,7 +76,10 @@ for i=1:alg.num_splits
         if alg.knn
             Lhat_knn(i,j) = graph_classify_knn(Atrn,Gtrn,alg,Atst,Gtst);
         end
-
+        
+        if alg.bayes_plugin
+            Lhat_bayes(i,j) = graph_classify_bayes_plugin(Atrn,Gtrn,alg,Atst,Gtst);
+        end        
     end
 end
 
@@ -83,5 +87,6 @@ end
 Lhat(alg.num_splits,alg.num_repeats)=struct;
 if alg.ind_edge,    Lhat=catstruct(Lhat,Lhat_ind_edge); end
 if alg.knn,         Lhat=catstruct(Lhat,Lhat_knn);      end
+if alg.bayes_plugin,Lhat=catstruct(Lhat,Lhat_bayes);    end
 
 if alg.save, save([alg.datadir alg.fname '_results'],'Lhat','alg','inds'); end

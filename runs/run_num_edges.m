@@ -2,20 +2,19 @@ clear; clc
 
 alg.datadir = '~/Research/data/sims/labeled/';
 alg.figdir  = '~/Research/figs/sims/labeled/';
-alg.fname   = 'num_edges';
+alg.fname   = 'twenty_edges';
 alg.save    = 0;
 
-n = 5;
+n = 20;
 d = choose(n,2);
 p = 0.5;
 E = p*ones(n);
-s = 1000;
-loopy = 0;
-directed = 0;
+s = 2000;
+alg.loopy = 0;
+alg.directed = 0;
 adjacency_matrices = repmat(E,[1 1 s]) > rand(n,n,s);         % class 0 training samples
 
-
-class_labels=zeros(s,1);
+class_labels=zeros(1,s);
 num_edges=zeros(s,1);
 for l=1:s
     adjacency_matrices(:,:,l)=triu(adjacency_matrices(:,:,l),+1);
@@ -26,27 +25,33 @@ for l=1:s
     end
 end
 sum(class_labels)
-constants = get_constants(adjacency_matrices,class_labels,directed,loopy);     % get constants to ease classification code
+constants = get_constants(adjacency_matrices,class_labels,alg.directed,alg.loopy);     % get constants to ease classification code
 
 
 %% test using in-sample training data
 
-Lhat_bayes = graph_classify_bayes(adjacency_matrices,constants,alg);
+% alg.bayes_plugin=true;
+alg.ind_edge=true;
+alg.nb_ind=constants.inds;
+% alg.mle=true;
+alg.knn=true;
+alg.knn_vanilla=true;
+% alg.knn_lmnn=true;
 
-[Lhatin Lvarin ind Pin yhatin] = graph_classify_ind_edge(adjacency_matrices,constants,alg); % compute in-sample classification accuracy
-disp(Lhatin)
+% [Lhat_bayes Pin] = graph_classify_bayes_plugin(adjacency_matrices,constants,alg);
+% disp(Lhat_bayes)
 
 %% test using hold-out training data
 
-alg.num_splits      = 3;
+alg.num_splits      = 4;
 alg.num_repeats     = 2;
 
 [Lhats alg inds] = get_Lhat_hold_out(adjacency_matrices,class_labels,alg);
 
 %% make plots
 
-est_params  = get_params(adjacency_matrices,constants);         % estimate parameters from data
-plot_params(est_params,alg,params)                              % plot params and estimated params
-plot_recovered_subspaces(constants,est_params,alg)              % plot recovered subspaces 
-plot_edge_identification_rates(inds,constants,alg)              % plot misclassification rates and edge detection rates
+% est_params  = get_params(adjacency_matrices,constants);         % estimate parameters from data
+% plot_params(est_params,alg,params)                              % plot params and estimated params
+% plot_recovered_subspaces(constants,est_params,alg)              % plot recovered subspaces 
+% plot_edge_identification_rates(inds,constants,alg)              % plot misclassification rates and edge detection rates
 plot_Lhats(Lhats,alg)                                           % plot misclassification rates

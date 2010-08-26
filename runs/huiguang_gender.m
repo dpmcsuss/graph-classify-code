@@ -28,7 +28,7 @@ for i=1:siz(1)
     A1(:,:,i)=male(i,:)'*male(i,:);
     for j=1:siz(2)
         for k=1:siz(2)
-            A1(j,k,i)=A1(j,k,i)/(female(i,j)^2+female(i,k)^2);
+            A1(j,k,i)=A1(j,k,i)/(male(i,j)^2+male(i,k)^2);
         end
     end
 end
@@ -43,7 +43,7 @@ for i=1:length(adjacency_matrices)
     A=adjacency_matrices(:,:,i);
     thr = quantile(A(:),0.5);
     A(A<=thr)=0;
-    A(A>thr)=1;
+    A(A>thr)=1; 
     A=triu(A,+1);
     adjacency_matrices(:,:,i)=A;
 end
@@ -51,39 +51,39 @@ end
 alg.datadir = '~/Research/data/MRI/huiguang/';
 alg.figdir  = '~/Research/figs/MRI/huiguang/';
 alg.fname   = 'gender';
-alg.save = 1;
+alg.save = 0;
 
 if alg.save, save([alg.datadir alg.fname],'adjacency_matrices','class_labels'); end
 
-%% set algorithm parameters
+% set algorithm parameters
 
 constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
 
 alg.ind_edge        = true;
 alg.nb_ind          = find(triu(ones(constants.n),1));         % these graphs are undirected
 alg.num_inc_edges   = 100; 
-alg.num_coh_vertices= 10; 
+alg.num_coh_vertices= 30; 
 
 alg.knn             = true;
 alg.knn_vanilla     = true;
 
-%% test using in-sample training data
+% test using in-sample training data
 constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
 [Lhatin Lvarin ind Pin yhatin] = graph_classify_ind_edge(adjacency_matrices,constants,alg); % compute in-sample classification accuracy
 disp(Lhatin)
 
-%% test using hold-out training data
+% test using hold-out training data
 
 alg.num_splits=10;   % # of times to repeat
 alg.num_repeats=10;  % # of times to repeat
 
 [Lhats alg inds] = get_Lhat_hold_out(adjacency_matrices,class_labels,alg);
 
-%% make plots
+% make plots
 
 constants   = get_constants(adjacency_matrices,class_labels);   % get constants like # edges, etc.
 est_params  = get_params(adjacency_matrices,constants);         % estimate parameters from data
 
 plot_params(est_params,alg)                                     % plot params and estimated params
-plot_recovered_subspaces(constants,est_params,alg)              % plot recovered subspaces
+% plot_recovered_subspaces(constants,est_params,alg)              % plot recovered subspaces
 plot_Lhats(Lhats,alg)                                           % plot misclassification rates

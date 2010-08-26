@@ -31,4 +31,5 @@ else % default is that graphs are directed and loopy
 end
 
 constants.d=d;
+constants.p=2^d;
 constants.n=n;
