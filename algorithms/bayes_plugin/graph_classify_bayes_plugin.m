@@ -36,6 +36,9 @@ P.rho0_mle=P.rho0_mle/sum(P.rho0_mle);
 P.rho1_mle=P.rho1_mle+1/(Gtrn.s*2);
 P.rho1_mle=P.rho1_mle/sum(P.rho1_mle);
 
+P.pi1=Gtrn.s1/Gtrn.s;
+P.pi0=Gtrn.s0/Gtrn.s;
+
 if isfield(alg,'tru'), tru=true; else tru = false;  end
 if isfield(alg,'mle'), mle=true; else mle = false;  end
 
@@ -66,7 +69,7 @@ end
                 break
             end
         end
-        y=rho1(m)>rho0(m);
+        y=rho1(m)*P.pi1>rho0(m)*P.pi0;
     end
 
 end

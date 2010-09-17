@@ -24,6 +24,7 @@ x=x+repmat([-.5 -.5 .5 .5 -.5 .5 .5 -.5]',1,s);
 
 xTr = [x(1:2,:) x(3:4,:) x(5:6,:) x(7:8,:)];
 yTr=[zeros(1,s*2) ones(1,s*2)];
+L=eye(2);
 xnew=L*xTr;
 
 % subplot(121), 
@@ -42,11 +43,12 @@ ylabel('dimension 2')
 
 wh=[3 3]*1.0;   %width and height
 set(gcf,'PaperSize',wh,'PaperPosition',[0 0 wh],'Color','w');
-alg.figdir  = '~/Research/necog/figs/misc/';
+alg.figdir  = '~/Research/figs/necog_misc/';
 alg.fname   = 'knn_schem';
 
 figname=[alg.figdir alg.fname];
 print('-dpdf',figname)
+print('-depsc',figname)
 saveas(gcf,figname)
 
 
@@ -96,10 +98,11 @@ colormap('gray')
 
 wh=[3 1.5]*1.0;   %width and height
 set(gcf,'PaperSize',wh,'PaperPosition',[0 0 wh],'Color','w');
-alg.figdir  = '~/Research/necog/figs/misc/';
+alg.figdir  = '~/Research/figs/necog_misc/';
 alg.fname   = 'ie_schem';
 figname=[alg.figdir alg.fname];
 print('-dpdf',figname)
+print('-deps',figname)
 saveas(gcf,figname)
 
 %% plot independe edge schematic
@@ -152,10 +155,11 @@ colormap('gray')
 
 wh=[3 1.5]*1.0;   %width and height
 set(gcf,'PaperSize',wh,'PaperPosition',[0 0 wh],'Color','w');
-alg.figdir  = '~/Research/necog/figs/misc/';
+alg.figdir  = '~/Research/figs/necog_misc/';
 alg.fname   = 'subgraph_types';
 figname=[alg.figdir alg.fname];
 print('-dpdf',figname)
+print('-deps',figname)
 saveas(gcf,figname)
 
 %% non-canonical dim red
@@ -221,10 +225,11 @@ axis([-2 2 -1 1]),
 
 wh=[5 1.5]*1.5;   %width and height
 set(gcf,'PaperSize',wh,'PaperPosition',[0 0 wh],'Color','w');
-alg.figdir  = '~/Research/necog/figs/misc/';
+alg.figdir  = '~/Research/figs/necog_misc/';
 alg.fname   = 'non_canon';
 figname=[alg.figdir alg.fname];
 print('-dpdf',figname)
+print('-depsc',figname)
 saveas(gcf,figname)
 
 %%

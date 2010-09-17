@@ -1,8 +1,8 @@
 clear, clc, clf, %close all
 
-datadir = '~/Research/necog/data/BLSA/will/';
-figdir  = '~/Research/necog/figs/MR/';
-fname   = 'BLSA32';
+datadir = '~/Research/data/MRI/BLSA/will/';
+figdir  = '~/Research/figs/MRI/BLSA/';
+fname   = 'BLSA42';
 load([datadir fname])
 
 save_stuff = 0;
@@ -28,7 +28,7 @@ Z.nb    = 1;
 Z.max   = 1; Z.Nmax = G.n/10;
 Z.inc   = 1; Z.Ninc = G.n;
 
-[Lhatin ind Pin yhatin] = graph_classify_ie(As,G,Z);
+[Lhatin ind Pin yhatin] = graph_classify_ind_edge(As,G,Z);
 
 %% out-of-sample
 

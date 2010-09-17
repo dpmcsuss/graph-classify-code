@@ -20,7 +20,7 @@ if ~isfield(alg,'num_splits'), alg.num_splits = 1; end              % # of split
 if ~isfield(alg,'num_repeats'), alg.num_repeats = 1; end            % # of times to repeat each split
 
 if ~isfield(alg,'num_class0_train_samples')                         % # of samples to train class 0 parameters per fold
-    alg.num_class0_train_samples    = round(linspace(5,constants.s0-10,alg.num_splits));
+    alg.num_class0_train_samples    = round(linspace(2,constants.s0-2,alg.num_splits));
 end
 
 if ~isfield(alg,'num_class0_test_samples')                          % # of samples to test class 1 per fold
@@ -28,7 +28,7 @@ if ~isfield(alg,'num_class0_test_samples')                          % # of sampl
 end
 
 if ~isfield(alg,'num_class1_train_samples')                         % # of samples to train class 1 parameters per fold
-    alg.num_class1_train_samples    = round(linspace(5,constants.s1-10,alg.num_splits));
+    alg.num_class1_train_samples    = round(linspace(2,constants.s1-2,alg.num_splits));
 end
 
 if ~isfield(alg,'num_class1_test_samples')                          % # of samples to test class 1 per fold
@@ -45,6 +45,8 @@ end
 if ~isfield(alg,'ind_edge'),    alg.ind_edge    = true;  end
 if ~isfield(alg,'knn'),         alg.knn         = false; end
 if ~isfield(alg,'bayes_plugin'),alg.bayes_plugin= false;  end
+if ~isfield(alg,'directed'),    alg.directed    = true;  end
+if ~isfield(alg,'loopy'),       alg.loopy       = false; end
 inds{1,1}=[];
 
 for i=1:alg.num_splits
@@ -79,7 +81,12 @@ for i=1:alg.num_splits
         
         if alg.bayes_plugin
             Lhat_bayes(i,j) = graph_classify_bayes_plugin(Atrn,Gtrn,alg,Atst,Gtst);
+        end
+
+        if alg.er
+            Lhat_er(i,j) = graph_classify_ER(Atrn,Gtrn,Atst,Gtst);
         end        
+
     end
 end
 
@@ -88,5 +95,6 @@ Lhat(alg.num_splits,alg.num_repeats)=struct;
 if alg.ind_edge,    Lhat=catstruct(Lhat,Lhat_ind_edge); end
 if alg.knn,         Lhat=catstruct(Lhat,Lhat_knn);      end
 if alg.bayes_plugin,Lhat=catstruct(Lhat,Lhat_bayes);    end
+if alg.er,          Lhat=catstruct(Lhat,Lhat_er);    end
 
 if alg.save, save([alg.datadir alg.fname '_results'],'Lhat','alg','inds'); end

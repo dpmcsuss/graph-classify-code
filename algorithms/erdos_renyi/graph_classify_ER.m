@@ -1,4 +1,4 @@
-function [Lhat ind Lvar P yhat] = graph_classify_ER(Atrn,Gtrn,alg,Atst,Gtst)
+function [Lhat Lvar P yhat] = graph_classify_ER(Atrn,Gtrn,Atst,Gtst)
 
 if nargin==3                            % in-sample classifier for debugging purposes
     Atst = Atrn;
@@ -8,10 +8,11 @@ end
 P.eta0 = mean(mean(mean(Atrn(:,:,Gtrn.y0))));
 P.eta1 = mean(mean(mean(Atrn(:,:,Gtrn.y1))));
 
+P.pi0=Gtrn.s0/Gtrn.s;
+P.pi1=Gtrn.s1/Gtrn.s;
+
 for i=1:Gtst.s
-
-        yhat.tru(i)  = ie_classify(Atst(:,:,i),P,alg.signal_subgraph_ind);
-
+        yhat.er(i)  = er_classify(Atst(:,:,i),P);
 end
 
 fn=fieldnames(yhat);                % names of classifiers
@@ -23,29 +24,13 @@ end
 
 end
 
-function y = ie_classify(datum,P,ind)
-% this function classifies using independent edge assumption.  each edge
-% could be distributed according to a poisson distribution, or a
-% bernoulli. the class conditional posterior is computed as appropriate.
-% 
-% INPUT
-% datum:    the graph to be classified
-% P:        structure of parameter estimates to use for classification
-% ind:      indices to use in classifier
-% 
-% OUTPUT:
-% y:        estimated class
+function y = er_classify(datum,P)
 
-if any(datum(ind))>1            % if poisson
-    post0=sum(sum(datum(ind).*P.lnE0(ind) - P.E0(ind)))+P.lnprior0;
-    post1=sum(sum(datum(ind).*P.lnE1(ind) - P.E1(ind)))+P.lnprior1;
-else                            % if bernoulli
-    post0=sum(datum(ind).*P.lnE0(ind)+(1-datum(ind)).*P.ln1E0(ind))+P.lnprior0;
-    post1=sum(datum(ind).*P.lnE1(ind)+(1-datum(ind)).*P.ln1E1(ind))+P.lnprior1;
-end
+sum0=sum(datum(:));
+sum1=sum(1-datum(:));
 
-[foo bar] = sort([post0, post1]);
-y=bar(2)-1;
+y= (log(P.eta1)*sum0+log(1-P.eta1)*sum1) + log(P.pi1) ...
+    > log(P.eta0)*sum0+log(1-P.eta0)*sum1 + log(P.pi0);
 
 end
 

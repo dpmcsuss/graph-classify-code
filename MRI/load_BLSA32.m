@@ -1,7 +1,7 @@
 clear, clc
-datadir = '~/Research/necog/data/BLSA/will/BLSA82/';
+datadir = '/Users/joshyv/Research/data/MRI/BLSA/will/2010_08_16/';
 files   = dir(datadir); files(1:3)=[];
-groups  = importdata('~/Research/necog/data/BLSA/will/BLSA82/BLSA32.txt');
+groups  = importdata('/Users/joshyv/Research/data/MRI/BLSA/will/2010_04_14/BLSA32.txt');
 s       = length(files)-3;
 n       = 70;
 As      = zeros(n,n,s);
@@ -48,4 +48,4 @@ end
 
 % G = get_constants(As,ys);
 % clear A datadir files groups i j k m n s
-save('~/Research/necog/data/BLSA/will/BLSA32','As','labels')
+save('~/Research/data/MRI/BLSA/will/BLSA42','As','labels')
