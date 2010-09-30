@@ -1,8 +1,8 @@
 %% simulate kidney-egg problem
 clear; clc
 
-alg.datadir = '~/Research/necog/data/sims/';
-alg.figdir  = '~/Research/necog/figs/sims/';
+alg.datadir = '~/Research/data/sims/';
+alg.figdir  = '~/Research/figs/sims/';
 alg.fname   = 'FWQAP';
 alg.save = 1;
 
@@ -50,7 +50,7 @@ alg.max_fw_iters        = 30;
 
 %% test using in-sample training data
 constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
-[Lhatin Lvarin ind Pin yhatin] = graph_classify_ie(adjacency_matrices,constants,alg); % compute in-sample classification accuracy
+[Lhatin Lvarin ind Pin yhatin] = graph_classify_ind_edge(adjacency_matrices,constants,alg); % compute in-sample classification accuracy
 disp(Lhatin)
 
 %% the results from this should be the performance givent the same training
@@ -64,7 +64,7 @@ ytst=constants.ys(tst_ind);
 Gtrn=get_constants(Atrn,ytrn);
 Gtst=get_constants(Atst,ytst);
 
-Lhatin2 = graph_classify_ie(Atrn,Gtrn,alg,Atst,Gtst)
+Lhatin2 = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst)
 
 %% same as above, but permute data and don't tell anybody (shhhhh)
 % make data unlabeled
@@ -85,10 +85,10 @@ ytst=constants.ys(tst_ind);
 Gtrn=get_constants(Atrn,ytrn);
 Gtst=get_constants(Atst,ytst);
 
-Lhatin3 = graph_classify_ie(Atrn,Gtrn,alg,Atst,Gtst)
+Lhatin3 = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst)
 
 %% test using hold-out training data
-[Lhats inds num_iters] = wrapper_hold_out_unbalanced_unlabeled_training_data(adjacency_matrices,class_labels,alg);
+[Lhats inds num_iters] = get_Lhat_unlabeled_graphs(adjacency_matrices,class_labels,alg);
 
 %% make plots
 

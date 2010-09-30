@@ -29,10 +29,21 @@ for ii=1:alg.max_fw_iters
         k=k+1;
         if j < constants.s0, B=Atrn(:,:,1); else B=Atrn(:,:,2); end
         A=adjacency_matrices(:,:,j);
-        [f,myp,x,iter]=sfw(A,-B,ii);
+        if ii==1
+            %Carey's LAP approximation
+            %Note that sum(sum(-A(myp,:).*B))==f
+            [myp,f]=munkres(-B*A');
+            iter=0;
+            Atst(:,:,k)=A(myp,:);
+        else
+            %FW approximate solution of QAP
+            %Note that sum(sum(-A.*B(myp,myp)))==f
+            [f,myp,x,iter]=sfw(A,-B,ii-1);
+            Atst(myp,myp,k)=A;
+        end
         num_iters(ii,j)=iter;
-        myp=1:constants.n;
-        Atst(:,:,k)=A(myp,myp);
+       % myp=1:constants.n;
+        
     end
 
     ytrn = [0 1];
