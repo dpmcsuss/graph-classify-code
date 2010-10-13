@@ -1,15 +1,15 @@
 %% simulate kidney-egg problem
 clear; clc
 
-alg.datadir = '~/Research/data/sims/';
-alg.figdir  = '~/Research/figs/sims/';
+alg.datadir = '~/Research/data/unlabeled_graphs/';
+alg.figdir  = '~/Research/figs/unlabeled_graphs/';
 alg.fname   = 'FWQAP';
 alg.save = 1;
 
 params.n = 10;      n = params.n; % # of vertices
 params.p = 0.5;     p = params.p; % prob of connection for kidney
-params.q0 = 0.2;    q0 = params.q0; % prob of connection for egg
-params.q1 = 0.8;    q1 = params.q1; % prob of connection for egg
+params.q0 = 0.25;    q0 = params.q0; % prob of connection for egg
+params.q1 = 0.75;    q1 = params.q1; % prob of connection for egg
 params.s = 102;     s = params.s; % # of samples
 
 params.num_signal_vertices = 3;                                                 % # of vertices containing signal
@@ -76,7 +76,7 @@ for i=1:constants.s
 end
 
 
-Atrn=As(:,:,[1 constants.s0+1]);
+Atrn=adjacency_matrices(:,:,[1 constants.s0+1]);
 tst_ind=1:constants.s; tst_ind(constants.s0)=[]; tst_ind(1)=[];
 Atst=As(:,:,tst_ind);
 ytrn=[0 1];
