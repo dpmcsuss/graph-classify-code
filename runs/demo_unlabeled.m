@@ -1,8 +1,8 @@
 %% simulate kidney-egg problem
 clear; clc
 
-alg.datadir = '~/Research/data/unlabeled_graphs/';
-alg.figdir  = '~/Research/figs/unlabeled_graphs/';
+alg.datadir = '~/Research/data/graph_sims/unlabeled/';
+alg.figdir  = '~/Research/figs/graph_sims/unlabeled/';
 alg.fname   = 'FWQAP';
 alg.save = 1;
 
@@ -37,6 +37,8 @@ adjacency_matrices(:,:,1:siz0(3))=A0;                   % create adjacency_matri
 adjacency_matrices(:,:,siz0(3)+1:siz0(3)+siz1(3))=A1;   % add class 1 samples
 class_labels=[zeros(1,siz0(3)) ones(1,siz1(3))];        % vector of class labels
 
+constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
+
 save([alg.datadir alg.fname],'adjacency_matrices','class_labels','params','alg')
 
 %% setup algorithmic parameters
@@ -49,7 +51,6 @@ alg.num_signal_edges    = params.num_signal_edges;                  % # of signa
 alg.max_fw_iters        = 30;
 
 %% test using in-sample training data
-constants = get_constants(adjacency_matrices,class_labels);     % get constants to ease classification code
 [Lhatin Lvarin ind Pin yhatin] = graph_classify_ind_edge(adjacency_matrices,constants,alg); % compute in-sample classification accuracy
 disp(Lhatin)
 

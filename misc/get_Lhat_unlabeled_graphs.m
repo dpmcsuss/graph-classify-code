@@ -5,12 +5,15 @@ inds{alg.max_fw_iters} = [];
 
 tst_ind = 1:constants.s; tst_ind(constants.s0)=[]; tst_ind(1)=[];
 
-% make data unlabeled
-for i=tst_ind
-    q=randperm(constants.n);
-    A=adjacency_matrices(:,:,i);
-    adjacency_matrices(:,:,i)=A(q,q);
-end
+ytrn = [0 1];
+ytst = class_labels(tst_ind);
+
+% % make data unlabeled
+% for i=tst_ind
+%     q=randperm(constants.n);
+%     A=adjacency_matrices(:,:,i);
+%     adjacency_matrices(:,:,i)=A(q,q);
+% end
 
 if isfield(alg,'signal_subgraph_ind'), Lhats.tru = zeros(alg.max_fw_iters,1); end
 Lhats.nb    = zeros(alg.max_fw_iters,1);
@@ -46,8 +49,6 @@ for ii=1:alg.max_fw_iters
         
     end
 
-    ytrn = [0 1];
-    ytst = class_labels(tst_ind);
 
     Gtrn = get_constants(Atrn,ytrn);
     Gtst = get_constants(Atst,ytst);

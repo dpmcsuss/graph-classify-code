@@ -1,4 +1,4 @@
-function [Lhat ind Lvar P yhat] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst)
+function [Lhat ind Lvar P yhat] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gtst,params)
 % this script classifies using a number of different approaches
 % INPUT:
 % Atrn:     n x n x s array, where |V|=n, and s is the number of samples
@@ -10,7 +10,7 @@ function [Lhat ind Lvar P yhat] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gts
 %   num_coh_edges:          if exists, do incoherent signal classification, using this number of edges
 % Atst:     same as Atrn but for test data
 % Gtst:     same as Gtrn but for test data
-% 
+%
 % OUTPUT:
 %   Lhat:   misclassification rate for each algorithm implemented
 %   ind:    index of edges used for each algorithm implemented
@@ -19,24 +19,34 @@ function [Lhat ind Lvar P yhat] = graph_classify_ind_edge(Atrn,Gtrn,alg,Atst,Gts
 %   yhat:   list of estimated class identity for each graph
 
 if nargin==3                            % in-sample classifier for debugging purposes
-    P = get_params_mle(Atrn,Gtrn); 
+    P = get_params_mle(Atrn,Gtrn);
     Atst = Atrn;
     Gtst = Gtrn;
-else                                    % update parameters using only training data   
-    P = get_params_mle(Atrn(:,:,1:Gtrn.s),Gtrn);  
-end 
+elseif nargin==5                                    % update parameters using only training data
+    P = get_params_mle(Atrn(:,:,1:Gtrn.s),Gtrn);
+else
+    P       = params;
+    P.lnE0  = log(P.E0);
+    P.ln1E0 = log(1-P.E0);
+    P.lnE1  = log(P.E1);
+    P.ln1E1 = log(1-P.E1);
+    
+    % log-priors
+    P.lnprior0 = log(Gtst.s0/Gtst.s);
+    P.lnprior1 = log(Gtst.s1/Gtst.s);
+end
 
 % initialize stuff for the different classifiers
-if isfield(alg,'signal_subgraph_ind'),  tru=true;                                       
+if isfield(alg,'signal_subgraph_ind'),  tru=true;
 else tru= false;  end
 
-if isfield(alg,'nb_ind'),               nb=true;                                        
+if isfield(alg,'nb_ind'),               nb=true;
 else nb = false;  end
 
-if isfield(alg,'num_inc_edges'),        inc=true;  ind(1).inc = zeros(1,alg.num_inc_edges);    
+if isfield(alg,'num_inc_edges'),        inc=true;  ind(1).inc = zeros(1,alg.num_inc_edges);
 else  inc = false; end
 
-if isfield(alg,'num_coh_vertices'),     coh=true;  ind(1).coh = zeros(1,alg.num_coh_vertices); 
+if isfield(alg,'num_coh_vertices'),     coh=true;  ind(1).coh = zeros(1,alg.num_coh_vertices);
 else coh = false; end
 
 if isfield(alg,'num_inc_edges') || isfield(alg,'num_coh_vertices')
@@ -46,25 +56,25 @@ else
 end
 
 for i=1:Gtst.s
-
+    
     if tru                          % classify using only true signal edges
         yhat.tru(i)  = ie_classify(Atst(:,:,i),P,alg.signal_subgraph_ind);
     end
-
+    
     if nb                           % naive bayes classifier
         yhat.nb(i)  = ie_classify(Atst(:,:,i),P,alg.nb_ind); % estimated class identities
     end
-
+    
     if inc                          % incoherent edge classifier
         ind(i).inc = get_inc_edges(P.d_opt,alg.num_inc_edges);
         yhat.inc(i)= ie_classify(Atst(:,:,i),P,ind(i).inc);
     end
-
+    
     if coh                          % coherent edge classifier
         ind(i).coh  = get_max_edges(P.d_opt,alg.num_coh_vertices);
         yhat.coh(i) = ie_classify(Atst(:,:,i),P,ind(i).coh);
     end
-
+    
 end
 
 fn=fieldnames(yhat);                % names of classifiers
@@ -80,12 +90,12 @@ function y = ie_classify(datum,P,ind)
 % this function classifies using independent edge assumption.  each edge
 % could be distributed according to a poisson distribution, or a
 % bernoulli. the class conditional posterior is computed as appropriate.
-% 
+%
 % INPUT
 % datum:    the graph to be classified
 % P:        structure of parameter estimates to use for classification
 % ind:      indices to use in classifier
-% 
+%
 % OUTPUT:
 % y:        estimated class
 
