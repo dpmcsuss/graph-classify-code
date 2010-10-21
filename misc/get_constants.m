@@ -8,7 +8,9 @@ siz   = size(adjacency_matrices);       % output is n x n x s
 n   = siz(1);         % # vertices
 constants.s0  = length(constants.y0);   % # of class 0 examples
 constants.s1  = length(constants.y1);   % # of class 1 examples
-constants.s   = siz(3);         % # training samples
+if numel(siz)==2, constants.s=1;
+else constants.s   = siz(3);         % # training samples
+end
 
 dummy=ones(n);
 if nargin==4,
