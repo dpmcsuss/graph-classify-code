@@ -3,7 +3,7 @@ function ind = get_max_edges(delhat,num_vertices)
 % if num_vertices is unspecified, n/10 is used
 
 deg = sum(delhat,1) + sum(delhat,2)';
-[degsort IX] = sort(deg,'descend');
+[degsort IX] = sort(deg,'ascend');
 n=length(deg);
 if nargin==1, num_vertices=round(n/10); end
 ind_max_mat=zeros(n);

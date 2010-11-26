@@ -1,8 +1,8 @@
 function P = get_params_mle(adjacency_matrices,constants)
 % this funtion gets the parameters necessary for independent edge algorithms
 
-% NOTE THAT THIS IS A HACK AND WE WILL MODIFY TO USE DIRICHLET PRIOR
-eps = 1/200;                        % to deal with 0's and 1's
+% NOTE THAT THIS IS ENSURES WE DON'T GET ZEROS
+eps = 1/(10*constants.s);                        % to deal with 0's and 1's
 
 % estimated class 0 edge probabilities
 P.E0    = mean(adjacency_matrices(:,:,constants.y0),3);

@@ -33,8 +33,8 @@ class_labels=[zeros(1,siz0(3)) ones(1,siz1(3))];        % vector of class labels
 %     adjacency_matrices(:,:,i)=A(q,q);
 % end
 
-datadir = '~/Research/necog/data/sims/';                % name of directory in which to store data upon saving stuff
-figdir  = '~/Research/necog/figs/sims/';                % name of directory in which to store figures upon saving stuff
+datadir = '~/Research/data/sims/';                % name of directory in which to store data upon saving stuff
+figdir  = '~/Research/figs/sims/';                % name of directory in which to store figures upon saving stuff
 fname   = 'kidney_egg';                                 % name of files to save (to be appended with more details)
 
 save([datadir fname],'adjacency_matrices','class_labels','params','datadir','figdir','fname')
