@@ -1,4 +1,4 @@
-function [Atrn Gtrn Atst Gtst] = crossvalprep(As,constants,trn_s0,trn_s1)
+function [Atrn Gtrn Atst Gtst inds] = crossvalprep(As,constants,trn_s0,trn_s1)
 % this function prepares data to be run by various classification
 % algorithms
 % INPUT:
@@ -11,7 +11,7 @@ function [Atrn Gtrn Atst Gtst] = crossvalprep(As,constants,trn_s0,trn_s1)
 %   Gtrn:       constatnts for training data
 %   Atst:       adj. mat.'s for testing
 %   Gtst:       constants for testing data
-
+%   inds:       collection of indices (for graph invariant approach)
 
 tst_s0=constants.s0-trn_s0;
 tst_s1=constants.s1-trn_s1;
@@ -33,3 +33,10 @@ ytst = [zeros(1,length(y0tst)) ones(1,length(y1tst))];
 
 Gtrn = get_constants(Atrn,ytrn);
 Gtst = get_constants(Atst,ytst);
+
+inds.y0trn = y0trn;
+inds.y1trn = y1trn;
+inds.y0tst = y0tst;
+inds.y1tst = y1tst;
+inds.ytst  = [inds.y0tst inds.y1tst];
+inds.s_tst = length(inds.ytst);

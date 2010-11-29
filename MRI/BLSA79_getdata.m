@@ -16,6 +16,7 @@ for s=1:S
     A= importdata([alg.datadir 'quotient_graphs/' files(s).name]);
     A(isnan(A))=0;
     A(A>=0.2)=1;
+    A(A<0.2)=0;
     As(:,:,s)=A(2:n+1,2:n+1);
     targs(s)=blsaSubjects.male(s);
 end

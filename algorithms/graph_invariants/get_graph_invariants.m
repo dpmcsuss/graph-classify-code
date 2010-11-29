@@ -47,7 +47,7 @@ end
 
 end
 
-% get max eval
+%% get max eval
 function T=maxeval(A)
 
 OPTS.disp = 0;
