@@ -13,17 +13,13 @@ function [Lstats yhat] = plugin_classify(As,classes,params,subspace)
 %   yhat:       list of estimated class identity for each graph
 
 siz     = size(As);
-if length(siz)==3
-    s       = siz(end);                         % # of samples (robust to As being an arbitrary array)
-else
-    s = 1;
-end
+s       = siz(end);                         % # of samples (robust to As being an arbitrary array)
 poiss   = any(As(:))>1;          % whether data is Poisson or Bernoulli
 n_subs  = length(subspace);
 yhat    = nan(s,n_subs);
 
 for i=1:s
-    datum = As(:,:,i);               % this line only makes sense when data are graphs
+    datum = As(:,:,i);               % this line only makes sense when data are graphs    
     for j=1:n_subs
         ind = subspace(j).indices;         % for code legibility
         
