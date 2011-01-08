@@ -48,7 +48,6 @@ for k=1:sz(3)
     singVals(:,k) = diag(squeeze(Ss(:,:,k)));
 end
 
-
 % show scree plots of for all the graphs, red is targs is true blue is
 % targs is false
 figure(401);
@@ -59,10 +58,22 @@ plot( singVals(:,targs==0), 'b');
 %% Step 3 - Classify using first d singular values
 % needed to add the repo to the path
 d=5;
-inds = struct('ytrn', 1:length(targs),...
-              'y0trn', find(targs == 0),...
-              'y1trn', find(targs == 1));
-discrim = struct('dLDA',1);
-params = get_discriminant_params(singVals(1:d,:),inds,discrim);
+n=length(targs);
+all_ind = struct('ytrn', 1:n,'y0trn', find(targs == 0), 'y1trn', find(targs == 1));
+ind = struct('ytrn', cell(n,1),'y0trn', cell(n,1),'y1trn', cell(n,1));
 
-[Lhat Lsem] = discriminant_classifiers(singVals(1:d,:),targs,params,discrim);
+discrim = struct('dLDA',1);
+Lhat = struct('dLDA',cell(n,1));
+Lsem = Lhat;
+% remove each sample to do LOOCV
+for k=1:n
+    ind(k).ytrn = all_ind.ytrn(all_ind.ytrn~=k);
+    ind(k).y0trn = all_ind.y0trn(all_ind.y0trn~=k);
+    ind(k).y1trn = all_ind.y1trn(all_ind.y1trn~=k);
+    params = get_discriminant_params(singVals(1:d,:),...
+                                        inds(k),discrim);
+    [Lhat(k) Lsem(k)] = discriminant_classifiers(singVals(1:d,k),targs(k),...
+                                            params,discrim);
+end
+
+
