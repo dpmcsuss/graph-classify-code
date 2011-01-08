@@ -56,4 +56,13 @@ hold all;
 plot( singVals(:,targs==1), 'r');
 plot( singVals(:,targs==0), 'b');
 
-%% 
+%% Step 3 - Classify using first d singular values
+% needed to add the repo to the path
+d=5;
+inds = struct('ytrn', 1:length(targs),...
+              'y0trn', find(targs == 0),...
+              'y1trn', find(targs == 1));
+discrim = struct('dLDA',1);
+params = get_discriminant_params(singVals(1:d,:),inds,discrim);
+
+[Lhat Lsem] = discriminant_classifiers(singVals(1:d,:),targs,params,discrim);
