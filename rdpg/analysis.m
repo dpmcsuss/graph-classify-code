@@ -33,14 +33,33 @@
 %% Setup - Change to fit your desires
 
 % this is just where i load stuff from my computer
-load /users/dsussman/documents/MATLAB/Brain_graphs/BLSA79_data.mat;
-
+%load /users/dsussman/documents/MATLAB/Brain_graphs/BLSA79_data.mat;
+load /users/dsussman/documents/MATLAB/Brain_graphs/BLSA50_stripped.mat;
+As_nan = zeros([size(data(1).A),length(data)]);
+sz = size(As_nan);
+As = As_nan;
+for k=1:length(data) % replace all nan values with 0s
+    As_nan(:,:,k) = data(k).A;
+    for i=1:sz(1)
+        for j=1:sz(2)
+            if ~isnan(As_nan(i,j,k))
+                As(i,j,k) = As_nan(i,j,k);
+            end
+        end
+    end
+end
+As_nonSym = As;
+targs = [data.y];
 % you can set up stuff however you want here
 
-%% Step 1 - Compute Laplacians
+% Symetrize the the adjacency matrix
+for k = 1:length(data)
+    As(:,:,k) = As(:,:,k)+As(:,:,k)';
+end
+
+%% Step 1 & 2 - Compute Laplacians and SVDs, make scree plots
 Ls = graph_laplacian(As);
 
-%% Step 2 - Compute SVDs and make scree plots
 [Us, Ss, Vs] = graph_svd(Ls);
 sz =  size(Ss);
 singVals =  zeros(sz(1),sz(3)); % col vectors of singular vals
@@ -55,25 +74,90 @@ hold all;
 plot( singVals(:,targs==1), 'r');
 plot( singVals(:,targs==0), 'b');
 
-%% Step 3 - Classify using first d singular values
+%% Classify using first d singular values
 % needed to add the repo to the path
-d=5;
-n=length(targs);
-all_ind = struct('ytrn', 1:n,'y0trn', find(targs == 0), 'y1trn', find(targs == 1));
-ind = struct('ytrn', cell(n,1),'y0trn', cell(n,1),'y1trn', cell(n,1));
 
+% n=length(targs);
+% nNode = length(singVals);
+% all_ind = struct('ytrn', 1:n,'y0trn', find(targs ==0), 'y1trn', find(targs == 1));
+% ind = struct('ytrn', [],'y0trn', [],'y1trn', []);
+% 
+% discrim = struct('dLDA',1,'QDA',1);
+% Lhat = struct('dLDA',cell(nNode-1-5,n),'QDA',cell(nNode-1-5,n));
+% Lsem = Lhat;
+% % remove each sample to do LOOCV
+% for d=1:(nNode-1-5);
+%     for k=1:n
+%         ind.ytrn = all_ind.ytrn(all_ind.ytrn~=k);
+%         ind.y0trn = all_ind.y0trn(all_ind.y0trn~=k);
+%         ind.y1trn = all_ind.y1trn(all_ind.y1trn~=k);
+%         
+%         subspace = d;
+%         params = get_discriminant_params(singVals(subspace,:),...
+%                                             ind,discrim);
+%         [Lhat(d,k) Lsem(d,k)] = discriminant_classifiers(singVals(subspace,k),targs(k),...
+%                                                 params,discrim);
+%     end
+% end
+% 
+% 
+% Lhat_dLda = mean(reshape([Lhat.dLDA],size(Lhat)),2);
+% Lhat_Qda = mean(reshape([Lhat.QDA],size(Lhat)),2);
+% 
+% % plot Lhat vs which singular value
+% figure(402); clf; plot(1:nNode-1-5,[Lhat_dLda,Lhat_Qda])
+%% Estimate Latent Features
+
+% size of the in and out latent features to be used
+inSpace = [1:12,15,20,25,30,40];
+outSpace = [1:12,15,20,25,30,40];
+Lhat_dLda = zeros(length(inSpace),length(outSpace));
+sz = size(As);
 discrim = struct('dLDA',1);
-Lhat = struct('dLDA',cell(n,1));
-Lsem = Lhat;
-% remove each sample to do LOOCV
-for k=1:n
-    ind(k).ytrn = all_ind.ytrn(all_ind.ytrn~=k);
-    ind(k).y0trn = all_ind.y0trn(all_ind.y0trn~=k);
-    ind(k).y1trn = all_ind.y1trn(all_ind.y1trn~=k);
-    params = get_discriminant_params(singVals(1:d,:),...
-                                        inds(k),discrim);
-    [Lhat(k) Lsem(k)] = discriminant_classifiers(singVals(1:d,k),targs(k),...
-                                            params,discrim);
+for kIn=1:length(inSpace)
+for kOut=1:length(outSpace)    
+    
+    % get the feature vectors
+    dIn = inSpace(kIn);
+    dOut = outSpace(kOut);
+    [Lat_in,Lat_out] = estimate_latent_features_SVD(As,dIn,dOut);
+    
+    % do loocv using dLDA
+    Lhat =  lda_loocv(...
+        reshape([Lat_in,Lat_out],[(dIn+dOut)*sz(1),sz(3)]),targs,discrim);
+    Lhat_dLda(kIn,kOut) = mean([Lhat.dLDA]);
+        
+%%%     [dIn,dOut]
+%     subspaceIn = 1:dIn;
+%     subspaceOut = 1:dOut;
+%     Lat_out = Vs(:,subspaceOut,:);
+%     Lat_in = Us(:,subspaceIn,:);
+%     sz =  size(Us);
+%     for k=1:sz(3)
+%         Lat_out(:,:,k) = diag(singVals(:,k).^(.5))*Lat_out(:,:,k);
+%         Lat_in(:,:,k)  = diag(singVals(:,k).^(.5))*Lat_in(:,:,k);
+%     end
+% 
+%     features = reshape([Lat_in,Lat_out],[(dIn+dOut)*sz(1),sz(3)]);
+%     n=length(targs);
+%     all_ind = struct('ytrn', 1:n,'y0trn', find(targs ==0), 'y1trn', find(targs == 1));
+%     ind = struct('ytrn', [],'y0trn', [],'y1trn', []);
+% 
+%     discrim = struct('dLDA',1);%,'QDA',1);
+%     Lhat = struct('dLDA',cell(n,1));%,'QDA',1);
+%     Lsem = Lhat;
+% 
+%     for k=1:n
+%         ind.ytrn = all_ind.ytrn(all_ind.ytrn~=k);
+%         ind.y0trn = all_ind.y0trn(all_ind.y0trn~=k);
+%         ind.y1trn = all_ind.y1trn(all_ind.y1trn~=k);
+% 
+%         params = get_discriminant_params(features,ind,discrim);
+%         [Lhat(k) Lsem(k)] = discriminant_classifiers(features(:,k),targs(k),...
+%                                                 params,discrim);
+%     end
+% 
+%     Lhat_dLda(dIn,dOut) = mean([Lhat.dLDA]);
+
 end
-
-
+end
