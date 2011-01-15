@@ -6,6 +6,7 @@ function [ Lhat ] = lda_loocv( features, classes, discrim )
 %   incorrectly classified sample. 
 n = length(classes);
 Lhat(n) = discrim;
+Lsem = Lhat;
 all_ind = struct('ytrn', 1:n, ...
                  'y0trn', find(classes == 0),...
                  'y1trn', find(classes == 1));
