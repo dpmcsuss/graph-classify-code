@@ -109,14 +109,17 @@ plot( singVals(:,targs==0), 'b');
 %% Estimate Latent Features
 
 % size of the in and out latent features to be used
-inSpace = [1:12,15,20,25,30,40];
-outSpace = [1:12,15,20,25,30,40];
+ inSpace = [1:12,14,17,20,24,30,35,40];
+ outSpace = [1:12,14,17,20,24,30,35,40];
 Lhat_dLda = zeros(length(inSpace),length(outSpace));
+Lhat_Lda = Lhat_dLda;
+Lhat_Qda = Lhat_dLda;
+Lhat_dQda = Lhat_dLda;
 sz = size(As);
-discrim = struct('dLDA',1);
+discrim = struct('LDA',1,'dLDA',1,'QDA',1,'dQDA',1);
 for kIn=1:length(inSpace)
 for kOut=1:length(outSpace)    
-    
+    [dIn,dOut]
     % get the feature vectors
     dIn = inSpace(kIn);
     dOut = outSpace(kOut);
@@ -126,7 +129,11 @@ for kOut=1:length(outSpace)
     Lhat =  lda_loocv(...
         reshape([Lat_in,Lat_out],[(dIn+dOut)*sz(1),sz(3)]),targs,discrim);
     Lhat_dLda(kIn,kOut) = mean([Lhat.dLDA]);
-        
+    Lhat_Lda(kIn,kOut) = mean([Lhat.LDA]);
+    Lhat_dQda(kIn,kOut) = mean([Lhat.dQDA]);
+    Lhat_Qda(kIn,kOut) = mean([Lhat.QDA]);
+    
+    %{
 %%%     [dIn,dOut]
 %     subspaceIn = 1:dIn;
 %     subspaceOut = 1:dOut;
@@ -158,6 +165,18 @@ for kOut=1:length(outSpace)
 %     end
 % 
 %     Lhat_dLda(dIn,dOut) = mean([Lhat.dLDA]);
+%}
+end
+end
+%save('/users/dsussman/documents/MATLAB/Brain_graphs/BLSA50_classified.mat');
+%% Cluster features
+d = 5;
+kCluster = 5;
+n=length(targs);
+features = zeros(kCluster,d,n);
+for k=1:n
+    [idx,features(:,:,k)] = kmeans(Lat_in(:,:,k),kCluster);
+end
 
-end
-end
+
+
