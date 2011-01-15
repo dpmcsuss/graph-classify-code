@@ -20,7 +20,9 @@ if isfield(discrim,'dLDA')
     InvdSig=zeros(siz(1));
     InvdSig(diag_ind)=diag(Sig).^-1;
     params.InvdSig=InvdSig;
-    if any(isinf(params.InvdSig)), error('something is constant that should not be'); end
+    if any(isinf(params.InvdSig))
+        error('something is constant that should not be');
+    end
 end
 
 
@@ -30,11 +32,18 @@ end
 % end
 
 
-if isfield(discrim,'QDA')
+
+if isfield(discrim,'QDA')  || isfield(discrim,'dQDA')
     Sig0=cov(x(:,inds.y0trn)');
     Sig1=cov(x(:,inds.y1trn)');
-    params.InvSig0=inv(Sig0);
-    params.InvSig1=inv(Sig1);
+    if isfield(discrim,'QDA') 
+        params.InvSig0=inv(Sig0);
+        params.InvSig1=inv(Sig1);
+    end
+    if isfield( discrim,'dQDA' )
+        params.InvdSig0 = diag(diag(Sig0).^-1);
+        params.InvdSig1 = diag(diag(Sig1).^-1);
+    end
 end
 
 

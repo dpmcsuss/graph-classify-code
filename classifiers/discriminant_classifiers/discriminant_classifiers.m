@@ -37,10 +37,10 @@ for i=1:S
         yhat.QDA(i)=e0'*params.InvSig0*e0 - params.lnprior0 > e1'*params.InvSig1*e1 - params.lnprior1;
     end
     
-    if QDA
+    if dQDA
         e0=(preds(:,i)-params.mu0);
         e1=(preds(:,i)-params.mu1);
-        yhat.QDA(i)=e0'*params.InvdSig0*e0 - params.lnprior0 > e1'*params.InvdSig1*e1 - params.lnprior1;
+        yhat.dQDA(i)=e0'*params.InvdSig0*e0 - params.lnprior0 > e1'*params.InvdSig1*e1 - params.lnprior1;
     end
     
 end
