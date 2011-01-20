@@ -18,5 +18,4 @@ while norm(D-Dold,'fro')>epsilon
     D = diag(diag(X'*X));
     k=k+1;
 end
-k
 end
