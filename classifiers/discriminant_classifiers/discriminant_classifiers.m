@@ -22,7 +22,7 @@ for i=1:S
     if LDA
         e0=(preds(:,i)-params.mu0);
         e1=(preds(:,i)-params.mu1);
-        yhat.LDA(i)=e0'*params.InvSig*e0 - params.lnprior0 > e1'*params.InvSig*e1 - params.lnprior1;
+        yhat.LDA(i)=e0'*(params.Sig\e0) - params.lnprior0 > e1'*(params.Sig\e1) - params.lnprior1;
     end
     
     if dLDA
@@ -34,7 +34,7 @@ for i=1:S
     if QDA
         e0=(preds(:,i)-params.mu0);
         e1=(preds(:,i)-params.mu1);
-        yhat.QDA(i)=e0'*params.InvSig0*e0 - params.lnprior0 > e1'*params.InvSig1*e1 - params.lnprior1;
+        yhat.QDA(i)=e0'*(params.Sig0\e0) - params.lnprior0 > e1'*(params.Sig1\e1) - params.lnprior1;
     end
     
     if dQDA

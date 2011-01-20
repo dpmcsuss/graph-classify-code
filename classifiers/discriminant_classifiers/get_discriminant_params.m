@@ -13,7 +13,8 @@ if isfield(discrim,'LDA') || isfield(discrim,'dLDA')
 end
 
 if isfield(discrim,'LDA')
-    params.InvSig=inv(Sig);
+    %params.InvSig=inv(Sig);
+    params.Sig=Sig;
 end
 
 if isfield(discrim,'dLDA')
@@ -37,8 +38,10 @@ if isfield(discrim,'QDA')  || isfield(discrim,'dQDA')
     Sig0=cov(x(:,inds.y0trn)');
     Sig1=cov(x(:,inds.y1trn)');
     if isfield(discrim,'QDA') 
-        params.InvSig0=inv(Sig0);
-        params.InvSig1=inv(Sig1);
+        params.Sig0=Sig0;
+        params.Sig1=Sig1;
+        %params.InvSig0=inv(Sig0);
+        %params.InvSig1=inv(Sig1);
     end
     if isfield( discrim,'dQDA' )
         params.InvdSig0 = diag(diag(Sig0).^-1);
