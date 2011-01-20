@@ -18,12 +18,12 @@ end
 
 [U,S,V] = graph_svd(graph_laplacian(A));
 
-subspaceIn = 1:dIn;
-subspaceOut = 1:dOut;
+% subspaceIn = 1:dIn;
+% subspaceOut = 1:dOut;
 
 if length(sz) == 2
-    latIn = S.^.5 * V(:,subspaceIn);
-    latOut = S.^.5 * U(:,subspaceOut);
+    latIn =  V(:,1:dIn)*(S(1:dIn,1:dIn).^.5);
+    latOut = U(:,1:dOut)*(S(1:dOut,1:dOut).^.5);
     
     return;
 end
@@ -31,8 +31,8 @@ end
 latIn = zeros(sz(1),dIn,sz(3));
 latOut = zeros(sz(1),dOut,sz(3));
 for k=1:sz(3)
-    latIn(:,:,k) = S(:,:,k).^.5 * V(:,subspaceIn,k);
-    latOut(:,:,k) = S(:,:,k).^.5 * U(:,subspaceOut,k);
+     latIn(:,:,k) =  V(:,1:dIn,k)*(S(1:dIn,1:dIn,k).^.5);
+     latOut(:,:,k) = U(:,1:dOut,k)*(S(1:dOut,1:dOut,k).^.5);
 end
     
 
