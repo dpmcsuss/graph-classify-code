@@ -109,30 +109,43 @@ plot( singVals(:,targs==0), 'b');
 %% Estimate Latent Features
 
 % size of the in and out latent features to be used
- inSpace = [1:12,14,17,20,24,30,35,40];
- outSpace = [1:12,14,17,20,24,30,35,40];
+ inSpace = 1:6; %[1:12,14,17,20,24,30,35,40];
+ outSpace = 1:6; %[1:12,14,17,20,24,30,35,40];
 Lhat_dLda = zeros(length(inSpace),length(outSpace));
 Lhat_Lda = Lhat_dLda;
 Lhat_Qda = Lhat_dLda;
 Lhat_dQda = Lhat_dLda;
 sz = size(As);
+whiten = true;
 discrim = struct('LDA',1,'dLDA',1,'QDA',1,'dQDA',1);
+
 for kIn=1:length(inSpace)
 for kOut=1:length(outSpace)    
-    [dIn,dOut]
     % get the feature vectors
     dIn = inSpace(kIn);
     dOut = outSpace(kOut);
+    [dIn,dOut]
+    %% All the actual work
     [Lat_in,Lat_out] = estimate_latent_features_SVD(As,dIn,dOut);
     
+    features = zeros([(dIn+dOut)*sz(1),sz(3)]);
+    for k=1:sz(3)
+        features(:,k) = reshape([Lat_in(:,:,k),Lat_out(:,:,k)],(dIn+dOut)*sz(1),1);
+    end
     % do loocv using dLDA
-    Lhat =  lda_loocv(...
-        reshape([Lat_in,Lat_out],[(dIn+dOut)*sz(1),sz(3)]),targs,discrim);
-    Lhat_dLda(kIn,kOut) = mean([Lhat.dLDA]);
-    Lhat_Lda(kIn,kOut) = mean([Lhat.LDA]);
-    Lhat_dQda(kIn,kOut) = mean([Lhat.dQDA]);
-    Lhat_Qda(kIn,kOut) = mean([Lhat.QDA]);
+    Lhat =  lda_loocv(features,...
+        targs,discrim,whiten);
+  
     
+    
+    [mean([Lhat.dLDA]),mean([Lhat.LDA]),...
+        mean([Lhat.dQDA]),mean([Lhat.QDA])]
+    %%
+    
+    wLhat_dLda(kIn,kOut) = mean([Lhat.dLDA]);
+    wLhat_Lda(kIn,kOut) = mean([Lhat.LDA]);
+    wLhat_dQda(kIn,kOut) = mean([Lhat.dQDA]);
+    wLhat_Qda(kIn,kOut) = mean([Lhat.QDA]);
     %{
 %%%     [dIn,dOut]
 %     subspaceIn = 1:dIn;
@@ -170,13 +183,71 @@ end
 end
 %save('/users/dsussman/documents/MATLAB/Brain_graphs/BLSA50_classified.mat');
 %% Cluster features
-d = 5;
-kCluster = 5;
+
+cluster_Lhats = zeros(4,20,8);
+for d = 2:20
+[Lat_in,Lat_out] = estimate_latent_features_SVD(As,d,d);
+
+for kCluster = 3:8
+    [kCluster,d]
 n=length(targs);
-features = zeros(kCluster,d,n);
+sz = size(Lat_in);
+idx = zeros(sz(1),1);
+cluster_idx = zeros(kCluster,1,n);
+cluster_centroid = zeros(kCluster,d,n);
+try
 for k=1:n
-    [idx,features(:,:,k)] = kmeans(Lat_in(:,:,k),kCluster);
+    T = clusterdata(Lat_in(:,:,k),kCluster);
+    start_centroids = zeros(kCluster,d);
+    for j=1:kCluster
+        start_centroids(j,:) = mean(Lat_in(T==j,:,k),1);
+    end
+   
+        [idx,cluster_centroid(:,:,k)] = kmeans(Lat_in(:,:,k),kCluster,'start',start_centroids);
+    
+    cluster_idx(:,k) = arrayfun(@(v) sum(idx==v),1:kCluster);
+end
+catch e
+        'Broke'
+        break;
+end
+Lhat = lda_loocv(reshape([cluster_idx,cluster_centroid],(d+1)*kCluster,n),targs,discrim,false);
+
+cluster_Lhats(:,d,kCluster) = [mean([Lhat.dLDA]),mean([Lhat.LDA]),...
+        mean([Lhat.dQDA]),mean([Lhat.QDA])]';
+end
+end
+%% Make a nice plot of the first 2 dimensions of the latent features
+figure;
+subplot(1,2,1);
+hold all;
+for k=1:70
+    plot(squeeze(Lat_in(k,1,targs==1)),...
+            squeeze(Lat_in(k,2,targs==1)),'.');
+end
+for k=1:kCluster
+    scatter(squeeze(cluster_centroid(k,1,targs==1)),...
+            squeeze(cluster_centroid(k,2,targs==1)),...
+            sum(cluster_idx(:,targs==1)==k));
+end
+plot(cos(0:.1:(2*pi)),sin(0:.1:(2*pi)));
+subplot(1,2,2);
+hold all;
+for k=1:70
+    plot(reshape(Lat_in(k,1,targs==0),1,sum(targs==0)),...
+            reshape(Lat_in(k,2,targs==0),1,sum(targs==0)),'.');
+end
+plot(cos(0:.1:(2*pi)),sin(0:.1:(2*pi)));
+
+%% S-T Latent featurse
+sz = size(As);
+d = 5;
+features = zeros(d*sz(1),sz(3));
+for k=1:sz(3)
+    features(:,k) = reshape(scheinerman_tucker_latent_features(As(:,:,k),d),...
+                            d*sz(1),1);
 end
 
-
-
+Lhat = lda_loocv(features,targs,discrim,false);
+[mean([Lhat.dLDA]),mean([Lhat.LDA]),...
+        mean([Lhat.dQDA]),mean([Lhat.QDA])]
